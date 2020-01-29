@@ -28,4 +28,5 @@ func main() {
 
 	fmt.Println(r)
 
+	downloadBaseInfos(&r)
 }
