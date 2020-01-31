@@ -9,7 +9,6 @@ import (
 
 func main() {
 	err := loadConfig()
-	// fmt.Println(config)
 
 	mobileNo := os.Args[1] // 07-479 (H스퀘어)
 
@@ -18,17 +17,23 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	// defer resp.Body.Close()
+	defer resp.Body.Close()
+
 	var sr BusArrivalStationResponse
 	xmlDec := xml.NewDecoder(resp.Body)
 	xmlDec.Decode(&sr)
 	for _, item := range sr.MsgBody.BusArrivalList {
-		fmt.Println("busNo", findBusNoFrom(item.RouteID))
-		fmt.Printf("PredictTime1: %s, LocationNo1: %s\n", item.PredictTime1, item.LocationNo1)
-		fmt.Printf("PredictTime2: %s, LocationNo2: %s\n", item.PredictTime2, item.LocationNo2)
-		fmt.Println("----")
+		fmt.Printf("# 버스번호: %s #\n", findBusNoFrom(item.RouteID))
+		printBusArrivalInfo(&item)
+		fmt.Println("")
 	}
+}
 
-	resp.Body.Close()
-
+func printBusArrivalInfo(info *busArrival) {
+	if info.PredictTime1 != "" && info.LocationNo1 != "" {
+		fmt.Printf("* 다음버스: %s분 후 (%s 정류장 전)\n", info.PredictTime1, info.LocationNo1)
+	}
+	if info.PredictTime2 != "" && info.LocationNo2 != "" {
+		fmt.Printf("* 다다음버스: %s분 후 (%s 정류장 전)\n", info.PredictTime2, info.LocationNo2)
+	}
 }
