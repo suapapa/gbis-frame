@@ -91,7 +91,7 @@ func scanBaseInfoLines(data []byte, atEOF bool) (advance int, token []byte, err 
 	return start, nil, nil
 }
 
-func findStationIDFrom(mobileNo string) string {
+func findStationIDAndName(mobileNo string) (string, string) {
 	mobileNo = strings.Replace(mobileNo, "-", "", -1)
 
 	r, err := os.Open(config.BaseInfo.Station)
@@ -107,9 +107,9 @@ func findStationIDFrom(mobileNo string) string {
 	scanner.Scan()
 	for scanner.Scan() {
 		line := strings.Split(scanner.Text(), "|")
-		stationID, mNo := line[0], line[7]
+		stationID, stationName, mNo := line[0], line[1], line[7]
 		if mNo == mobileNo {
-			return stationID
+			return stationID, stationName
 		}
 	}
 
@@ -118,37 +118,7 @@ func findStationIDFrom(mobileNo string) string {
 	}
 
 	log.Fatalf("cant fine stationID for mobileNo, %s", mobileNo)
-	return ""
-}
-
-func findStationNameFrom(mobileNo string) string {
-	mobileNo = strings.Replace(mobileNo, "-", "", -1)
-
-	r, err := os.Open(config.BaseInfo.Station)
-	if err != nil {
-		panic(err)
-	}
-	defer r.Close()
-
-	scanner := bufio.NewScanner(r)
-	scanner.Split(scanBaseInfoLines)
-	// skip first line
-	// STATION_ID|STATION_NM|CENTER_ID|CENTER_YN|X|Y|REGION_NAME|MOBILE_NO|DISTRICT_CD
-	scanner.Scan()
-	for scanner.Scan() {
-		line := strings.Split(scanner.Text(), "|")
-		stationName, mNo := line[1], line[7]
-		if mNo == mobileNo {
-			return stationName
-		}
-	}
-
-	if err := scanner.Err(); err != nil {
-		panic(err)
-	}
-
-	log.Fatalf("cant fine stationName for mobileNo, %s", mobileNo)
-	return ""
+	return "", ""
 }
 
 func findBusNoFrom(routeID string) string {
