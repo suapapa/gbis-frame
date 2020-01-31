@@ -20,9 +20,9 @@ func main() {
 	xmlDec := xml.NewDecoder(resp.Body)
 	xmlDec.Decode(&sr)
 	for _, item := range sr.MsgBody.BusArrivalList {
-		fmt.Println("routeId", item.RouteID) // TODO: routeId to bus No. from routeYYYYMMDD.txt
-		fmt.Println("PredictTime1", item.PredictTime1)
-		fmt.Println("PredictTime2", item.PredictTime2)
+		fmt.Println("busNo", findBusNoFrom(item.RouteID))
+		fmt.Printf("PredictTime1: %s, LocationNo1: %s\n", item.PredictTime1, item.LocationNo1)
+		fmt.Printf("PredictTime2: %s, LocationNo2: %s\n", item.PredictTime2, item.LocationNo2)
 		fmt.Println("----")
 	}
 

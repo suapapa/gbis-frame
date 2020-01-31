@@ -120,3 +120,31 @@ func findStationIDFrom(mobileNo string) string {
 	log.Fatalf("cant fine stationID for mobileNo, %s", mobileNo)
 	return ""
 }
+
+func findBusNoFrom(routeID string) string {
+	r, err := os.Open(config.BaseInfo.Route)
+	if err != nil {
+		panic(err)
+	}
+	defer r.Close()
+
+	scanner := bufio.NewScanner(r)
+	scanner.Split(scanBaseInfoLines)
+	// skip first line
+	// ROUTE_ID|ROUTE_NM|ROUTE_TP|ST_STA_ID|ST_STA_NM|ST_STA_NO|ED_STA_ID|ED_STA_NM|ED_STA_NO|UP_FIRST_TIME|UP_LAST_TIME|DOWN_FIRST_TIME|DOWN_LAST_TIME|PEEK_ALLOC|NPEEK_ALLOC|COMPANY_ID|COMPANY_NM|TEL_NO|REGION_NAME|DISTRICT_CD
+	scanner.Scan()
+	for scanner.Scan() {
+		line := strings.Split(scanner.Text(), "|")
+		rID, busNo := line[0], line[1]
+		if rID == routeID {
+			return busNo
+		}
+	}
+
+	if err := scanner.Err(); err != nil {
+		panic(err)
+	}
+
+	log.Fatalf("cant fine busNo for routeID, %s", routeID)
+	return ""
+}
