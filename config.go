@@ -11,11 +11,11 @@ import (
 type Config struct {
 	ServiceKey string `json:"servicekey"`
 	BaseInfo   struct {
-		Area         string `json:"area"`
-		Station      string `json:"station"`
-		Route        string `json:"route"`
-		RouteLine    string `json:"routeline"`
-		RouteStation string `json:"routestation"`
+		// Area         string `json:"area"`
+		Station string `json:"station"`
+		Route   string `json:"route"`
+		// RouteLine    string `json:"routeline"`
+		// RouteStation string `json:"routestation"`
 	} `json:"baseinfo"`
 }
 
@@ -43,13 +43,13 @@ func loadConfig() error {
 		cleanupBaseInfoDir()
 
 		// download base info txts
-		fPath, err := dlBaseInfo(r.MsgBody.BaseInfoItem.AreaDownloadURL)
-		if err != nil {
-			return err
-		}
-		config.BaseInfo.Area = fPath
+		// fPath, err := dlBaseInfo(r.MsgBody.BaseInfoItem.AreaDownloadURL)
+		// if err != nil {
+		// 	return err
+		// }
+		// config.BaseInfo.Area = fPath
 
-		fPath, err = dlBaseInfo(r.MsgBody.BaseInfoItem.StationDownloadURL)
+		fPath, err := dlBaseInfo(r.MsgBody.BaseInfoItem.StationDownloadURL)
 		if err != nil {
 			return err
 		}
@@ -61,17 +61,17 @@ func loadConfig() error {
 		}
 		config.BaseInfo.Route = fPath
 
-		fPath, err = dlBaseInfo(r.MsgBody.BaseInfoItem.RouteLineDownloadURL)
-		if err != nil {
-			return err
-		}
-		config.BaseInfo.RouteLine = fPath
+		// fPath, err = dlBaseInfo(r.MsgBody.BaseInfoItem.RouteLineDownloadURL)
+		// if err != nil {
+		// 	return err
+		// }
+		// config.BaseInfo.RouteLine = fPath
 
-		fPath, err = dlBaseInfo(r.MsgBody.BaseInfoItem.RouteStationDownloadURL)
-		if err != nil {
-			return err
-		}
-		config.BaseInfo.RouteStation = fPath
+		// fPath, err = dlBaseInfo(r.MsgBody.BaseInfoItem.RouteStationDownloadURL)
+		// if err != nil {
+		// 	return err
+		// }
+		// config.BaseInfo.RouteStation = fPath
 
 		w, err := os.Create(configFileName)
 		if err != nil {
@@ -79,11 +79,6 @@ func loadConfig() error {
 		}
 		defer w.Close()
 
-		// jEnc := json.NewEncoder(w)
-		// err = jEnc.Encode(&config)
-		// if err != nil {
-		// 	return err
-		// }
 		prettyConfig, err := json.MarshalIndent(config, "", "    ")
 		if err != nil {
 			return err
@@ -121,21 +116,21 @@ func isConfigValid() bool {
 		panic(err)
 	}
 
-	if !isExist(config.BaseInfo.Area) {
-		return false
-	}
+	// if !isExist(config.BaseInfo.Area) {
+	// 	return false
+	// }
 	if !isExist(config.BaseInfo.Station) {
 		return false
 	}
 	if !isExist(config.BaseInfo.Route) {
 		return false
 	}
-	if !isExist(config.BaseInfo.RouteLine) {
-		return false
-	}
-	if !isExist(config.BaseInfo.RouteStation) {
-		return false
-	}
+	// if !isExist(config.BaseInfo.RouteLine) {
+	// 	return false
+	// }
+	// if !isExist(config.BaseInfo.RouteStation) {
+	// 	return false
+	// }
 	return true
 }
 

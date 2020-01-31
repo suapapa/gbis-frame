@@ -4,13 +4,16 @@ import (
 	"encoding/xml"
 	"fmt"
 	"net/http"
+	"os"
 )
 
 func main() {
 	err := loadConfig()
 	// fmt.Println(config)
 
-	stationID := findStationIDFrom("07-479") // H스퀘어
+	mobileNo := os.Args[1] // 07-479 (H스퀘어)
+
+	stationID := findStationIDFrom(mobileNo)
 	resp, err := http.Get(urlBusArrivalServiceStation + fmt.Sprintf("?serviceKey=%s&stationId=%s", getServiceKey(), stationID))
 	if err != nil {
 		panic(err)
