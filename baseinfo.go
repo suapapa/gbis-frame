@@ -121,6 +121,36 @@ func findStationIDFrom(mobileNo string) string {
 	return ""
 }
 
+func findStationNameFrom(mobileNo string) string {
+	mobileNo = strings.Replace(mobileNo, "-", "", -1)
+
+	r, err := os.Open(config.BaseInfo.Station)
+	if err != nil {
+		panic(err)
+	}
+	defer r.Close()
+
+	scanner := bufio.NewScanner(r)
+	scanner.Split(scanBaseInfoLines)
+	// skip first line
+	// STATION_ID|STATION_NM|CENTER_ID|CENTER_YN|X|Y|REGION_NAME|MOBILE_NO|DISTRICT_CD
+	scanner.Scan()
+	for scanner.Scan() {
+		line := strings.Split(scanner.Text(), "|")
+		stationName, mNo := line[1], line[7]
+		if mNo == mobileNo {
+			return stationName
+		}
+	}
+
+	if err := scanner.Err(); err != nil {
+		panic(err)
+	}
+
+	log.Fatalf("cant fine stationName for mobileNo, %s", mobileNo)
+	return ""
+}
+
 func findBusNoFrom(routeID string) string {
 	r, err := os.Open(config.BaseInfo.Route)
 	if err != nil {

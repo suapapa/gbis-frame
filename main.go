@@ -9,21 +9,26 @@ import (
 
 func main() {
 	err := loadConfig()
+	if err != nil {
+		panic(err)
+	}
 
 	mobileNo := os.Args[1] // 07-479 (H스퀘어)
 
 	stationID := findStationIDFrom(mobileNo)
+	stationName := findStationNameFrom(mobileNo)
 	resp, err := http.Get(urlBusArrivalServiceStation + fmt.Sprintf("?serviceKey=%s&stationId=%s", getServiceKey(), stationID))
 	if err != nil {
 		panic(err)
 	}
 	defer resp.Body.Close()
 
+	fmt.Printf("# %s #\n", stationName)
 	var sr BusArrivalStationResponse
 	xmlDec := xml.NewDecoder(resp.Body)
 	xmlDec.Decode(&sr)
 	for _, item := range sr.MsgBody.BusArrivalList {
-		fmt.Printf("# 버스번호: %s #\n", findBusNoFrom(item.RouteID))
+		fmt.Printf("## 버스번호: %s ##\n", findBusNoFrom(item.RouteID))
 		printBusArrivalInfo(&item)
 		fmt.Println("")
 	}
