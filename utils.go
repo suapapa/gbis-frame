@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func dlBaseInfo(url string) error {
+func dlBaseInfo2CSV(url string) error {
 	filepath := strings.Split(url, "?")[1]
 	log.Printf("downloading %s...", filepath)
 
@@ -39,4 +39,12 @@ func dlBaseInfo(url string) error {
 	_, err = out.WriteString(bodyStr)
 
 	return err
+}
+
+func isExist(path string) bool {
+	_, err := os.Stat(path)
+	if os.IsNotExist(err) || err != nil {
+		return false
+	}
+	return true
 }
