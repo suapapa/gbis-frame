@@ -5,15 +5,17 @@ import (
 	"encoding/xml"
 	"net/http"
 	"os"
+	"time"
 )
 
 // Config contains current settings of program
 type Config struct {
 	ServiceKey string `json:"servicekey"`
 	BaseInfo   struct {
+		UpdateDate time.Time `json:"updatedate"`
+		Station    string    `json:"station"`
+		Route      string    `json:"route"`
 		// Area         string `json:"area"`
-		Station string `json:"station"`
-		Route   string `json:"route"`
 		// RouteLine    string `json:"routeline"`
 		// RouteStation string `json:"routestation"`
 	} `json:"baseinfo"`
@@ -34,44 +36,27 @@ func loadConfig() error {
 			return err
 		}
 		defer resp.Body.Close()
-		var r BaseInfoResponse
+		var baseInfoResp BaseInfoResponse
 		xmlDec := xml.NewDecoder(resp.Body)
-		xmlDec.Decode(&r)
+		xmlDec.Decode(&baseInfoResp)
 
 		resp.Body.Close()
 
 		cleanupBaseInfoDir()
 
-		// download base info txts
-		// fPath, err := dlBaseInfo(r.MsgBody.BaseInfoItem.AreaDownloadURL)
-		// if err != nil {
-		// 	return err
-		// }
-		// config.BaseInfo.Area = fPath
-
-		fPath, err := dlBaseInfo(r.MsgBody.BaseInfoItem.StationDownloadURL)
-		if err != nil {
+		if fPath, err := dlBaseInfo(baseInfoResp.MsgBody.BaseInfoItem.StationDownloadURL); err == nil {
+			config.BaseInfo.Station = fPath
+		} else {
 			return err
 		}
-		config.BaseInfo.Station = fPath
 
-		fPath, err = dlBaseInfo(r.MsgBody.BaseInfoItem.RouteDownloadURL)
-		if err != nil {
+		if fPath, err := dlBaseInfo(baseInfoResp.MsgBody.BaseInfoItem.RouteDownloadURL); err == nil {
+			config.BaseInfo.Route = fPath
+		} else {
 			return err
 		}
-		config.BaseInfo.Route = fPath
 
-		// fPath, err = dlBaseInfo(r.MsgBody.BaseInfoItem.RouteLineDownloadURL)
-		// if err != nil {
-		// 	return err
-		// }
-		// config.BaseInfo.RouteLine = fPath
-
-		// fPath, err = dlBaseInfo(r.MsgBody.BaseInfoItem.RouteStationDownloadURL)
-		// if err != nil {
-		// 	return err
-		// }
-		// config.BaseInfo.RouteStation = fPath
+		config.BaseInfo.UpdateDate = time.Now()
 
 		w, err := os.Create(configFileName)
 		if err != nil {
@@ -84,18 +69,22 @@ func loadConfig() error {
 			return err
 		}
 		w.Write(prettyConfig)
-	} else {
-		confR, err := os.Open(configFileName)
-		if err != nil {
-			return err
-		}
-		defer confR.Close()
-		jDec := json.NewDecoder(confR)
-		err = jDec.Decode(&config)
-		if err != nil {
-			return err
-		}
+		return nil
 	}
+
+	confR, err := os.Open(configFileName)
+	if err != nil {
+		return err
+	}
+	defer confR.Close()
+	jDec := json.NewDecoder(confR)
+	err = jDec.Decode(&config)
+	if err != nil {
+		return err
+	}
+
+	// TODO: compare config.BaseInfo.UpdateDate with time.Now() and
+	// check update in base infos.
 
 	return nil
 }
