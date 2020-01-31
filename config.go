@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"encoding/xml"
-	"log"
 	"net/http"
 	"os"
 )
@@ -30,7 +29,7 @@ var (
 
 func loadConfig() error {
 	if !isConfigValid() {
-		resp, err := http.Get(urlBaseInfoService + "?serviceKey=" + serviceKey)
+		resp, err := http.Get(urlBaseInfoService + "?serviceKey=" + getServiceKey())
 		if err != nil {
 			return err
 		}
@@ -80,11 +79,16 @@ func loadConfig() error {
 		}
 		defer w.Close()
 
-		jEnc := json.NewEncoder(w)
-		err = jEnc.Encode(&config)
+		// jEnc := json.NewEncoder(w)
+		// err = jEnc.Encode(&config)
+		// if err != nil {
+		// 	return err
+		// }
+		prettyConfig, err := json.MarshalIndent(config, "", "    ")
 		if err != nil {
 			return err
 		}
+		w.Write(prettyConfig)
 	} else {
 		confR, err := os.Open(configFileName)
 		if err != nil {
@@ -103,7 +107,6 @@ func loadConfig() error {
 
 func isConfigValid() bool {
 	if !isExist(configFileName) {
-		log.Println("here? 0")
 		return false
 	}
 
@@ -119,30 +122,25 @@ func isConfigValid() bool {
 	}
 
 	if !isExist(config.BaseInfo.Area) {
-		log.Println("here? 1", config.BaseInfo.Area)
 		return false
 	}
 	if !isExist(config.BaseInfo.Station) {
-		log.Println("here? 2")
 		return false
 	}
 	if !isExist(config.BaseInfo.Route) {
-		log.Println("here? 3")
 		return false
 	}
 	if !isExist(config.BaseInfo.RouteLine) {
-		log.Println("here? 4")
 		return false
 	}
 	if !isExist(config.BaseInfo.RouteStation) {
-		log.Println("here? 5")
 		return false
 	}
 	return true
 }
 
 func getServiceKey() string {
-	serviceKey = os.Getenv("SERVICEKEY")
+	serviceKey := os.Getenv("SERVICEKEY")
 	if serviceKey != "" {
 		return serviceKey
 	}
