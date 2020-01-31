@@ -10,8 +10,7 @@ func main() {
 	err := loadConfig()
 	// fmt.Println(config)
 
-	// TODO: get station ID from mobile key (5 digits) from stationYYYYMMDD.txt
-	stationID := "206000678" // H스퀘어
+	stationID := findStationIDFrom("07-479") // H스퀘어
 	resp, err := http.Get(urlBusArrivalServiceStation + fmt.Sprintf("?serviceKey=%s&stationId=%s", getServiceKey(), stationID))
 	if err != nil {
 		panic(err)
