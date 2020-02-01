@@ -5,7 +5,6 @@ import (
 	"flag"
 	"fmt"
 	"net/http"
-	"os"
 )
 
 var (
@@ -23,7 +22,7 @@ func main() {
 		panic(err)
 	}
 
-	mobileNo := os.Args[1] // 07-479 (H스퀘어)
+	mobileNo := flag.Args()[0] // 07-479 (H스퀘어)
 
 	stationID, stationName := findStationIDAndName(mobileNo)
 	resp, err := http.Get(urlBusArrivalServiceStation +
@@ -40,7 +39,7 @@ func main() {
 	if !flagImageOut {
 		printBusArrivalInfo(stationName, sr.MsgBody.BusArrivalList)
 	} else {
-		panic("not implemented yet!")
+		drawBusArrivalInfo(stationName, sr.MsgBody.BusArrivalList) // TODO : make out.png
 	}
 }
 
