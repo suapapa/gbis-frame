@@ -14,6 +14,10 @@
     BUSARRIVALSERVICEKEY="your_busarrival_servicekey" \
     ./go-gbis
 
+## TODO
+* [] 도착 버스 목록을 시간순으로 정렬하기
+* [] 텍스트로 출력하지 않고 이미지로 출력
+
 ## references
 * [공공데이터포털](https://www.data.go.kr/)
 * [경기버스정보](http://www.gbis.go.kr/)
