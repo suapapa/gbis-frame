@@ -10,8 +10,9 @@ import (
 
 // Config contains current settings of program
 type Config struct {
-	ServiceKey string `json:"servicekey"`
-	BaseInfo   struct {
+	BaseInfoServiceKey   string `json:"baseinfoServicekey"`
+	BusArrivalServiceKey string `json:"busarrivalServicekey"`
+	BaseInfo             struct {
 		UpdateDate time.Time `json:"updatedate"`
 		Station    string    `json:"station"`
 		Route      string    `json:"route"`
@@ -31,7 +32,7 @@ var (
 
 func loadConfig() error {
 	if !isConfigValid() {
-		resp, err := http.Get(urlBaseInfoService + "?serviceKey=" + getServiceKey())
+		resp, err := http.Get(urlBaseInfoService + "?serviceKey=" + getBaseInfoServiceKey())
 		if err != nil {
 			return err
 		}
@@ -123,14 +124,27 @@ func isConfigValid() bool {
 	return true
 }
 
-func getServiceKey() string {
-	serviceKey := os.Getenv("SERVICEKEY")
+func getBaseInfoServiceKey() string {
+	serviceKey := os.Getenv("BASEINFOSERVICEKEY")
 	if serviceKey != "" {
 		return serviceKey
 	}
 
-	if config.ServiceKey != "" {
-		return config.ServiceKey
+	if config.BaseInfoServiceKey != "" {
+		return config.BaseInfoServiceKey
+	}
+
+	panic("no servicekey")
+}
+
+func getBusArrivalServiceKey() string {
+	serviceKey := os.Getenv("BUSARRIVALSERVICEKEY")
+	if serviceKey != "" {
+		return serviceKey
+	}
+
+	if config.BusArrivalServiceKey != "" {
+		return config.BusArrivalServiceKey
 	}
 
 	panic("no servicekey")

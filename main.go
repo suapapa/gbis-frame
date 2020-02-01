@@ -16,7 +16,8 @@ func main() {
 	mobileNo := os.Args[1] // 07-479 (H스퀘어)
 
 	stationID, stationName := findStationIDAndName(mobileNo)
-	resp, err := http.Get(urlBusArrivalServiceStation + fmt.Sprintf("?serviceKey=%s&stationId=%s", getServiceKey(), stationID))
+	resp, err := http.Get(urlBusArrivalServiceStation +
+		fmt.Sprintf("?serviceKey=%s&stationId=%s", getBusArrivalServiceKey(), stationID))
 	if err != nil {
 		panic(err)
 	}
