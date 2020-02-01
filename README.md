@@ -10,7 +10,9 @@
 
 ## run
 
-    SERVICEKEY="your_servicekey" ./go-gbis
+    BASEINFOSERVICEKEY="your_baseinfo_servicekey" \
+    BUSARRIVALSERVICEKEY="your_busarrival_servicekey" \
+    ./go-gbis
 
 ## references
 * [공공데이터포털](https://www.data.go.kr/)
