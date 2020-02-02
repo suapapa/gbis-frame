@@ -16,10 +16,11 @@ var (
 func init() {
 	flag.BoolVar(&flagImageOut, "i", false, "set if u want image output")
 	flag.BoolVar(&flagDebugGG, "d", false, "draw guide line for gg elements")
-	flag.Parse()
 }
 
 func main() {
+	flag.Parse()
+
 	err := loadConfig()
 	if err != nil {
 		panic(err)
