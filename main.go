@@ -39,9 +39,9 @@ func main() {
 
 	// print result in txt
 	if !flagImageOut {
-		printBusArrivalInfo(stationName, sr.MsgBody.BusArrivalList)
+		printBusArrivalInfo(stationName, sr.BusArrivalList)
 	} else {
-		drawBusArrivalInfo(stationName, sr.MsgBody.BusArrivalList) // TODO : make out.png
+		drawBusArrivalInfo(stationName, sr.BusArrivalList) // TODO : make out.png
 	}
 }
 

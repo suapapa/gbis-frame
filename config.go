@@ -45,13 +45,13 @@ func loadConfig() error {
 
 		cleanupBaseInfoDir()
 
-		if fPath, err := dlBaseInfo(baseInfoResp.MsgBody.BaseInfoItem.StationDownloadURL); err == nil {
+		if fPath, err := dlBaseInfo(baseInfoResp.BaseInfoItem.StationDownloadURL); err == nil {
 			config.BaseInfo.Station = fPath
 		} else {
 			return err
 		}
 
-		if fPath, err := dlBaseInfo(baseInfoResp.MsgBody.BaseInfoItem.RouteDownloadURL); err == nil {
+		if fPath, err := dlBaseInfo(baseInfoResp.BaseInfoItem.RouteDownloadURL); err == nil {
 			config.BaseInfo.Route = fPath
 		} else {
 			return err

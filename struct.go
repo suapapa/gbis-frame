@@ -4,48 +4,43 @@ import "encoding/xml"
 
 // BaseInfoResponse represents response of http://openapi.gbis.go.kr/ws/rest/baseinfoservice
 type BaseInfoResponse struct {
-	XMLName      xml.Name `xml:"response"`
-	ComMsgHeader struct {
-		ErrMsg     string `xml:"errMsg"`
-		ReturnCode string `xml:"returnCode"`
-	} `xml:"comMsgHeader"`
-	MsgHeader struct {
-		QueryTime     string `xml:"queryTime"`
-		ResultCode    string `xml:"resultCode"`
-		ResultMessage string `xml:"resultMessage"`
-	} `xml:"msgHeader"`
-	MsgBody struct {
-		BaseInfoItem struct {
-			AreaVersion             string `xml:"areaVersion"`
-			AreaDownloadURL         string `xml:"areaDownloadUrl"`
-			StationVersion          string `xml:"stationVersion"`
-			StationDownloadURL      string `xml:"stationDownloadUrl"`
-			RouteVersion            string `xml:"routeVersion"`
-			RouteDownloadURL        string `xml:"routeDownloadUrl"`
-			RouteLineVersion        string `xml:"routeLineVersion"`
-			RouteLineDownloadURL    string `xml:"routeLineDownloadUrl"`
-			RouteStationVersion     string `xml:"routeStationVersion"`
-			RouteStationDownloadURL string `xml:"routeStationDownloadUrl"`
-		} `xml:"baseInfoItem"`
-	} `xml:"msgBody"`
+	XMLName      xml.Name     `xml:"response"`
+	ComMsgHeader comMsgHeader `xml:"comMsgHeader"`
+	MsgHeader    msgHeader    `xml:"msgHeader"`
+	BaseInfoItem struct {
+		AreaVersion             string `xml:"areaVersion"`
+		AreaDownloadURL         string `xml:"areaDownloadUrl"`
+		StationVersion          string `xml:"stationVersion"`
+		StationDownloadURL      string `xml:"stationDownloadUrl"`
+		RouteVersion            string `xml:"routeVersion"`
+		RouteDownloadURL        string `xml:"routeDownloadUrl"`
+		RouteLineVersion        string `xml:"routeLineVersion"`
+		RouteLineDownloadURL    string `xml:"routeLineDownloadUrl"`
+		RouteStationVersion     string `xml:"routeStationVersion"`
+		RouteStationDownloadURL string `xml:"routeStationDownloadUrl"`
+	} `xml:"msgBody>baseInfoItem"`
 }
 
 // BusArrivalStationResponse represents response of http://openapi.gbis.go.kr/ws/rest/busarrivalservice/station
 type BusArrivalStationResponse struct {
-	XMLName      xml.Name `xml:"response"`
-	ComMsgHeader struct {
-		ErrMsg     string `xml:"errMsg"`
-		ReturnCode string `xml:"returnCode"`
-	} `xml:"comMsgHeader"`
-	MsgHeader struct {
-		QueryTime     string `xml:"queryTime"`
-		ResultCode    string `xml:"resultCode"`
-		ResultMessage string `xml:"resultMessage"`
-	} `xml:"msgHeader"`
-	MsgBody struct {
-		BusArrivalList []busArrival `xml:"busArrivalList"`
-	} `xml:"msgBody"`
+	XMLName        xml.Name       `xml:"response"`
+	ComMsgHeader   comMsgHeader   `xml:"comMsgHeader"`
+	MsgHeader      msgHeader      `xml:"msgHeader"`
+	BusArrivalList busArrivalList `xml:"msgBody>busArrivalList"`
 }
+
+type comMsgHeader struct {
+	ErrMsg     string `xml:"errMsg"`
+	ReturnCode string `xml:"returnCode"`
+}
+
+type msgHeader struct {
+	QueryTime     string `xml:"queryTime"`
+	ResultCode    string `xml:"resultCode"`
+	ResultMessage string `xml:"resultMessage"`
+}
+
+type busArrivalList []busArrival
 
 // busArrival represents specific routeID's arraival infomation
 type busArrival struct {
