@@ -51,16 +51,7 @@ func drawImage(dc *gg.Context, imgName string, x, y float64) {
 		panic(err)
 	}
 	dc.DrawImage(img, int(x), int(y))
-
-	if flagDebugGG {
-		dc.SetRGB(1, 0, 0)
-		dc.SetLineWidth(1)
-		r := img.Bounds()
-		w := r.Size().X
-		h := r.Size().Y
-		dc.DrawRectangle(float64(x), float64(y), float64(w), float64(h))
-		dc.Stroke()
-	}
+	drawDebugCrossHair(dc, x, y)
 }
 
 func drawString(dc *gg.Context, text string, fontSize, x, y float64) {
@@ -69,15 +60,7 @@ func drawString(dc *gg.Context, text string, fontSize, x, y float64) {
 		panic(err)
 	}
 	dc.DrawString(text, x, y)
-
-	if flagDebugGG {
-		dc.SetRGB(1, 0, 0)
-		dc.SetLineWidth(1)
-		dc.DrawLine(x-10, y, x+10, y)
-		dc.Stroke()
-		dc.DrawLine(x, y-10, x, y+10)
-		dc.Stroke()
-	}
+	drawDebugCrossHair(dc, x, y)
 }
 
 func drawStringAnchored(dc *gg.Context, text string, fontSize, x, y, ax, ay float64) {
@@ -86,13 +69,17 @@ func drawStringAnchored(dc *gg.Context, text string, fontSize, x, y, ax, ay floa
 		panic(err)
 	}
 	dc.DrawStringAnchored(text, x, y, ax, ay)
+	drawDebugCrossHair(dc, x, y)
+}
 
-	if flagDebugGG {
-		dc.SetRGB(1, 0, 0)
-		dc.SetLineWidth(1)
-		dc.DrawLine(x-10, y, x+10, y)
-		dc.Stroke()
-		dc.DrawLine(x, y-10, x, y+10)
-		dc.Stroke()
+func drawDebugCrossHair(dc *gg.Context, x, y float64) {
+	if !flagDebugGG {
+		return // do nothing
 	}
+	dc.SetRGB(1, 0, 0)
+	dc.SetLineWidth(1)
+	dc.DrawLine(x-10, y, x+10, y)
+	dc.Stroke()
+	dc.DrawLine(x, y-10, x, y+10)
+	dc.Stroke()
 }
