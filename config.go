@@ -104,7 +104,7 @@ func loadConfig() error {
 		if config.BaseInfo.Station != newStationFilePath {
 			log.Println("station info updated")
 			if _, err := dlBaseInfo(baseInfoResp.BaseInfoItem.StationDownloadURL); err == nil {
-				os.Remove(config.BaseInfo.Station)
+				// os.Remove(config.BaseInfo.Station)
 				config.BaseInfo.Station = newStationFilePath
 			} else {
 				panic(err)
@@ -113,7 +113,7 @@ func loadConfig() error {
 		if config.BaseInfo.Route != newRouteFilePath {
 			log.Println("route info updated")
 			if _, err := dlBaseInfo(baseInfoResp.BaseInfoItem.RouteDownloadURL); err == nil {
-				os.Remove(config.BaseInfo.Route)
+				// os.Remove(config.BaseInfo.Route)
 				config.BaseInfo.Route = newRouteFilePath
 			} else {
 				panic(err)
