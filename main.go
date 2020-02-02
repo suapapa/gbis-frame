@@ -4,6 +4,7 @@ import (
 	"encoding/xml"
 	"flag"
 	"fmt"
+	"log"
 	"net/http"
 	"sort"
 )
@@ -27,7 +28,6 @@ func main() {
 	}
 
 	mobileNo := flag.Args()[0] // 07-479 (H스퀘어)
-
 	stationID, stationName := findStationIDAndName(mobileNo)
 	resp, err := http.Get(urlBusArrivalServiceStation +
 		fmt.Sprintf("?serviceKey=%s&stationId=%s", getBusArrivalServiceKey(), stationID))
@@ -38,13 +38,19 @@ func main() {
 	var sr BusArrivalStationResponse
 	xmlDec := xml.NewDecoder(resp.Body)
 	xmlDec.Decode(&sr)
+	if sr.MsgHeader.ResultCode != "0" {
+		log.Println(sr)
+		// log.Println(sr.ComMsgHeader.ErrMsg
+		// log.Println(sr.MsgHeader.ResultMessage)
+		panic("somthing wrong in query bus arrival")
+	}
 
 	sort.Sort(sr.BusArrivalList)
 	// print result in txt
 	if !flagImageOut {
 		printBusArrivalInfo(stationName, sr.BusArrivalList)
 	} else {
-		drawBusArrivalInfo(stationName, sr.BusArrivalList) // TODO : make out.png
+		drawBusArrivalInfo(stationName, sr.BusArrivalList)
 	}
 }
 
