@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"encoding/xml"
+	"log"
 	"net/http"
 	"os"
 	"time"
@@ -10,16 +11,32 @@ import (
 
 // Config contains current settings of program
 type Config struct {
-	BaseInfoServiceKey   string `json:"baseinfoServicekey"`
-	BusArrivalServiceKey string `json:"busarrivalServicekey"`
-	BaseInfo             struct {
-		UpdateDate time.Time `json:"updatedate"`
-		Station    string    `json:"station"`
-		Route      string    `json:"route"`
-		// Area         string `json:"area"`
-		// RouteLine    string `json:"routeline"`
-		// RouteStation string `json:"routestation"`
-	} `json:"baseinfo"`
+	BaseInfoServiceKey   string   `json:"baseinfoServicekey"`
+	BusArrivalServiceKey string   `json:"busarrivalServicekey"`
+	BaseInfo             baseInfo `json:"baseinfo"`
+}
+
+// Save saves config to default configFileName
+func (c Config) Save() error {
+	w, err := os.Create(configFileName)
+	if err != nil {
+		return err
+	}
+	defer w.Close()
+
+	// 현재 설정으로 기본 config 파일 생성
+	prettyConfig, err := json.MarshalIndent(c, "", "    ")
+	if err != nil {
+		return err
+	}
+	_, err = w.Write(prettyConfig)
+	return err
+}
+
+type baseInfo struct {
+	UpdateDate time.Time `json:"updatedate"`
+	Station    string    `json:"station"`
+	Route      string    `json:"route"`
 }
 
 const (
@@ -41,36 +58,22 @@ func loadConfig() error {
 		xmlDec := xml.NewDecoder(resp.Body)
 		xmlDec.Decode(&baseInfoResp)
 
-		resp.Body.Close()
-
 		cleanupBaseInfoDir()
-
 		if fPath, err := dlBaseInfo(baseInfoResp.BaseInfoItem.StationDownloadURL); err == nil {
 			config.BaseInfo.Station = fPath
 		} else {
 			return err
 		}
-
 		if fPath, err := dlBaseInfo(baseInfoResp.BaseInfoItem.RouteDownloadURL); err == nil {
 			config.BaseInfo.Route = fPath
 		} else {
 			return err
 		}
 
+		config.BaseInfoServiceKey = getBaseInfoServiceKey()
+		config.BusArrivalServiceKey = getBusArrivalServiceKey()
 		config.BaseInfo.UpdateDate = time.Now()
-
-		w, err := os.Create(configFileName)
-		if err != nil {
-			return err
-		}
-		defer w.Close()
-
-		prettyConfig, err := json.MarshalIndent(config, "", "    ")
-		if err != nil {
-			return err
-		}
-		w.Write(prettyConfig)
-		return nil
+		return config.Save()
 	}
 
 	confR, err := os.Open(configFileName)
@@ -84,8 +87,44 @@ func loadConfig() error {
 		return err
 	}
 
-	// TODO: compare config.BaseInfo.UpdateDate with time.Now() and
 	// check update in base infos.
+	if flagCheckBaseInfoUpdate && time.Since(config.BaseInfo.UpdateDate) >= 24*time.Hour {
+		log.Println("check base info update")
+		resp, err := http.Get(urlBaseInfoService + "?serviceKey=" + getBaseInfoServiceKey())
+		if err != nil {
+			return err
+		}
+		defer resp.Body.Close()
+		var baseInfoResp BaseInfoResponse
+		xmlDec := xml.NewDecoder(resp.Body)
+		xmlDec.Decode(&baseInfoResp)
+
+		newStationFilePath := baseInfoURLtoFilePath(baseInfoResp.BaseInfoItem.StationDownloadURL)
+		newRouteFilePath := baseInfoURLtoFilePath(baseInfoResp.BaseInfoItem.RouteDownloadURL)
+		if config.BaseInfo.Station != newStationFilePath {
+			log.Println("station info updated")
+			if _, err := dlBaseInfo(baseInfoResp.BaseInfoItem.StationDownloadURL); err == nil {
+				os.Remove(config.BaseInfo.Station)
+				config.BaseInfo.Station = newStationFilePath
+			} else {
+				panic(err)
+			}
+		}
+		if config.BaseInfo.Route != newRouteFilePath {
+			log.Println("route info updated")
+			if _, err := dlBaseInfo(baseInfoResp.BaseInfoItem.RouteDownloadURL); err == nil {
+				os.Remove(config.BaseInfo.Route)
+				config.BaseInfo.Route = newRouteFilePath
+			} else {
+				panic(err)
+			}
+		}
+
+		config.BaseInfoServiceKey = getBaseInfoServiceKey()
+		config.BusArrivalServiceKey = getBusArrivalServiceKey()
+		config.BaseInfo.UpdateDate = time.Now()
+		return config.Save()
+	}
 
 	return nil
 }
@@ -106,21 +145,13 @@ func isConfigValid() bool {
 		panic(err)
 	}
 
-	// if !isExist(config.BaseInfo.Area) {
-	// 	return false
-	// }
 	if !isExist(config.BaseInfo.Station) {
 		return false
 	}
 	if !isExist(config.BaseInfo.Route) {
 		return false
 	}
-	// if !isExist(config.BaseInfo.RouteLine) {
-	// 	return false
-	// }
-	// if !isExist(config.BaseInfo.RouteStation) {
-	// 	return false
-	// }
+
 	return true
 }
 

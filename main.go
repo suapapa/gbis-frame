@@ -10,13 +10,15 @@ import (
 )
 
 var (
-	flagImageOut bool
-	flagDebugGG  bool
+	flagImageOut            bool
+	flagDebugGG             bool
+	flagCheckBaseInfoUpdate bool
 )
 
 func init() {
 	flag.BoolVar(&flagImageOut, "i", false, "set if u want image output")
 	flag.BoolVar(&flagDebugGG, "d", false, "draw guide line for gg elements")
+	flag.BoolVar(&flagCheckBaseInfoUpdate, "u", false, "update baseinfo only if since last update is over a day")
 }
 
 func main() {
@@ -27,7 +29,7 @@ func main() {
 		panic(err)
 	}
 
-	mobileNo := flag.Args()[0] // 07-479 (H스퀘어)
+	mobileNo := flag.Args()[0] // 정류장 단축번호. 예) 07-479 (H스퀘어)
 	stationID, stationName := findStationIDAndName(mobileNo)
 	resp, err := http.Get(urlBusArrivalServiceStation +
 		fmt.Sprintf("?serviceKey=%s&stationId=%s", getBusArrivalServiceKey(), stationID))
@@ -45,8 +47,7 @@ func main() {
 		panic("somthing wrong in query bus arrival")
 	}
 
-	sort.Sort(sr.BusArrivalList)
-	// print result in txt
+	sort.Sort(sr.BusArrivalList) // 도착 시간순으로 버스목록 정렬
 	if !flagImageOut {
 		printBusArrivalInfo(stationName, sr.BusArrivalList)
 	} else {

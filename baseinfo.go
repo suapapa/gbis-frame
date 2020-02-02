@@ -33,9 +33,7 @@ func cleanupBaseInfoDir() error {
 
 func dlBaseInfo(url string) (string, error) {
 	log.Printf("downloading %s...", url)
-
-	fp := strings.Split(url, "?")[1]
-	fp = filepath.Join(baseInfoDir, fp)
+	fp := baseInfoURLtoFilePath(url)
 
 	// Get the data
 	resp, err := http.Get(url)
@@ -55,6 +53,11 @@ func dlBaseInfo(url string) (string, error) {
 	_, err = io.Copy(out, resp.Body)
 
 	return fp, err
+}
+
+func baseInfoURLtoFilePath(url string) string {
+	fp := strings.Split(url, "?")[1]
+	return filepath.Join(baseInfoDir, fp)
 }
 
 // modified from bufio.ScanWords
