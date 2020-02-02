@@ -59,11 +59,15 @@ func (l busArrivalList) Less(i, j int) bool {
 	if atoi(bI.PredictTime1) < atoi(bJ.PredictTime1) {
 		return true
 	}
-	if (bI.PredictTime2 != "" && bJ.PredictTime2 != "") &&
-		atoi(bI.PredictTime2) < atoi(bJ.PredictTime2) {
-		return true
+	if atoi(bI.PredictTime1) == atoi(bJ.PredictTime1) {
+		if (bI.PredictTime2 != "" && bJ.PredictTime2 != "") &&
+			atoi(bI.PredictTime2) < atoi(bJ.PredictTime2) {
+			return true
+		}
+		if bI.PredictTime2 != "" && bJ.PredictTime2 == "" {
+			return true
+		}
 	}
-
 	return false
 }
 
