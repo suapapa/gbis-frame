@@ -1,6 +1,9 @@
 package main
 
-import "encoding/xml"
+import (
+	"encoding/xml"
+	"strconv"
+)
 
 // BaseInfoResponse represents response of http://openapi.gbis.go.kr/ws/rest/baseinfoservice
 type BaseInfoResponse struct {
@@ -41,6 +44,28 @@ type msgHeader struct {
 }
 
 type busArrivalList []busArrival
+
+func (l busArrivalList) Len() int      { return len(l) }
+func (l busArrivalList) Swap(i, j int) { l[i], l[j] = l[j], l[i] }
+func (l busArrivalList) Less(i, j int) bool {
+	atoi := func(v string) int {
+		n, err := strconv.Atoi(v)
+		if err != nil {
+			panic(err)
+		}
+		return n
+	}
+	bI, bJ := l[i], l[j]
+	if atoi(bI.PredictTime1) < atoi(bJ.PredictTime1) {
+		return true
+	}
+	if (bI.PredictTime2 != "" && bJ.PredictTime2 != "") &&
+		atoi(bI.PredictTime2) < atoi(bJ.PredictTime2) {
+		return true
+	}
+
+	return false
+}
 
 // busArrival represents specific routeID's arraival infomation
 type busArrival struct {

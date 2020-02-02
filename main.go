@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"net/http"
+	"sort"
 )
 
 var (
@@ -37,6 +38,7 @@ func main() {
 	xmlDec := xml.NewDecoder(resp.Body)
 	xmlDec.Decode(&sr)
 
+	sort.Sort(sr.BusArrivalList)
 	// print result in txt
 	if !flagImageOut {
 		printBusArrivalInfo(stationName, sr.BusArrivalList)
