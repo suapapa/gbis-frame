@@ -9,10 +9,12 @@ import (
 
 var (
 	flagImageOut bool
+	flagDebugGG  bool
 )
 
 func init() {
 	flag.BoolVar(&flagImageOut, "i", false, "set if u want image output")
+	flag.BoolVar(&flagDebugGG, "d", false, "draw guide line for gg elements")
 	flag.Parse()
 }
 
