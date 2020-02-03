@@ -17,6 +17,10 @@ var (
 	flagLoopSecs            int
 )
 
+var (
+	stationID, stationName string
+)
+
 func init() {
 	flag.BoolVar(&flagImageOut, "i", false, "set if u want image output")
 	flag.BoolVar(&flagDebugGG, "d", false, "draw guide line for gg elements")
@@ -33,7 +37,7 @@ func main() {
 	}
 
 	mobileNo := flag.Args()[0] // 정류장 단축번호. 예) 07-479 (H스퀘어)
-	stationID, stationName := findStationIDAndName(mobileNo)
+	stationID, stationName = findStationIDAndName(mobileNo)
 
 	queryBusArrival := func() {
 		resp, err := http.Get(urlBusArrivalStationService +
@@ -53,9 +57,9 @@ func main() {
 
 		sort.Sort(sr.BusArrivalList) // 도착 시간순으로 버스목록 정렬
 		if !flagImageOut {
-			printBusArrivalInfo(stationName, sr.BusArrivalList)
+			printBusArrivalInfo(sr.BusArrivalList)
 		} else {
-			drawBusArrivalInfo(stationName, sr.BusArrivalList)
+			drawBusArrivalInfo(sr.BusArrivalList)
 		}
 	}
 
@@ -70,7 +74,7 @@ func main() {
 	}
 }
 
-func printBusArrivalInfo(stationName string, buses []busArrival) {
+func printBusArrivalInfo(buses []busArrival) {
 	fmt.Printf("# %s #\n", stationName)
 	for _, b := range buses {
 		fmt.Printf("## 버스번호: %s ##\n", findBusNo(b.RouteID))

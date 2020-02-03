@@ -18,7 +18,7 @@ var (
 	firstDraw = true
 )
 
-func drawBusArrivalInfo(stationName string, buses []busArrival) {
+func drawBusArrivalInfo(buses []busArrival) {
 	if !firstDraw && len(buses) == len(lastBuses) {
 		same := true
 		for i, b := range buses {
@@ -66,6 +66,7 @@ func drawBusArrivalInfo(stationName string, buses []busArrival) {
 
 	lastBuses = buses
 	dc.SavePNG("out.png")
+	// TODO: send the image to panel
 }
 
 func drawImage(dc *gg.Context, imgName string, x, y float64) {
