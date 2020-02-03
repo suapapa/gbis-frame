@@ -24,23 +24,59 @@ type BaseInfoResponse struct {
 	} `xml:"msgBody>baseInfoItem"`
 }
 
+// BusStationResponse represents response of http://openapi.gbis.go.kr/ws/rest/busstationservice
+type BusStationResponse struct {
+	XMLName        xml.Name     `xml:"response"`
+	ComMsgHeader   comMsgHeader `xml:"comMsgHeader"`
+	MsgHeader      msgHeader    `xml:"msgHeader"`
+	BusStationList struct {
+		CenterYn    string `xml:"centerYn"`
+		DistrictCd  string `xml:"districtCd"`
+		MobileNo    string `xml:"mobileNo"`
+		RegionName  string `xml:"regionName"`
+		StationID   string `xml:"stationId"`
+		StationName string `xml:"stationName"`
+		X           string `xml:"x"`
+		Y           string `xml:"y"`
+	} `xml:"msgBody>busStationList"`
+}
+
+// BusRouteInfoResponse represents response of http://openapi.gbis.go.kr/ws/rest/busrouteservice/info
+type BusRouteInfoResponse struct {
+	XMLName          xml.Name     `xml:"response"`
+	ComMsgHeader     comMsgHeader `xml:"comMsgHeader"`
+	MsgHeader        msgHeader    `xml:"msgHeader"`
+	BusRouteInfoItem struct {
+		CompanyID        string `xml:"companyId"`
+		CompanyName      string `xml:"companyName"`
+		CompanyTel       string `xml:"companyTel"`
+		DistrictCd       string `xml:"districtCd"`
+		DownFirstTime    string `xml:"downFirstTime"`
+		DownLastTime     string `xml:"downLastTime"`
+		EndMobileNo      string `xml:"endMobileNo"`
+		EndStationID     string `xml:"endStationId"`
+		EndStationName   string `xml:"endStationName"`
+		PeekAlloc        string `xml:"peekAlloc"`
+		RegionName       string `xml:"regionName"`
+		RouteID          string `xml:"routeId"`
+		RouteName        string `xml:"routeName"`
+		RouteTypeCd      string `xml:"routeTypeCd"`
+		RouteTypeName    string `xml:"routeTypeName"`
+		StartMobileNo    string `xml:"startMobileNo"`
+		StartStationID   string `xml:"startStationId"`
+		StartStationName string `xml:"startStationName"`
+		UpFirstTime      string `xml:"upFirstTime"`
+		UpLastTime       string `xml:"upLastTime"`
+		NPeekAlloc       string `xml:"nPeekAlloc"`
+	} `xml:"msgBody>busRouteInfoItem"`
+}
+
 // BusArrivalStationResponse represents response of http://openapi.gbis.go.kr/ws/rest/busarrivalservice/station
 type BusArrivalStationResponse struct {
 	XMLName        xml.Name       `xml:"response"`
 	ComMsgHeader   comMsgHeader   `xml:"comMsgHeader"`
 	MsgHeader      msgHeader      `xml:"msgHeader"`
 	BusArrivalList busArrivalList `xml:"msgBody>busArrivalList"`
-}
-
-type comMsgHeader struct {
-	ErrMsg     string `xml:"errMsg"`
-	ReturnCode string `xml:"returnCode"`
-}
-
-type msgHeader struct {
-	QueryTime     string `xml:"queryTime"`
-	ResultCode    string `xml:"resultCode"`
-	ResultMessage string `xml:"resultMessage"`
 }
 
 type busArrivalList []busArrival
@@ -90,4 +126,15 @@ type busArrival struct {
 
 	StaOrder string `xml:"staOrder"` // 정류소 순번
 	Flag     string `xml:"flag"`     // 상태구분 (RUN:운행중, PASS:운행중, STOP:운행종료, WAIT:회차지대기)
+}
+
+type comMsgHeader struct {
+	ErrMsg     string `xml:"errMsg"`
+	ReturnCode string `xml:"returnCode"`
+}
+
+type msgHeader struct {
+	QueryTime     string `xml:"queryTime"`
+	ResultCode    string `xml:"resultCode"`
+	ResultMessage string `xml:"resultMessage"`
 }

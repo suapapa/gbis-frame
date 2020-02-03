@@ -125,6 +125,7 @@ func findStationIDAndName(mobileNo string) (string, string) {
 }
 
 func findBusNoFrom(routeID string) string {
+	log.Println(routeID)
 	r, err := os.Open(config.BaseInfo.Route)
 	if err != nil {
 		panic(err)
