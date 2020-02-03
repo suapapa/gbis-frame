@@ -58,7 +58,7 @@ func main() {
 func printBusArrivalInfo(stationName string, buses []busArrival) {
 	fmt.Printf("# %s #\n", stationName)
 	for _, b := range buses {
-		fmt.Printf("## 버스번호: %s ##\n", findBusNoFrom(b.RouteID))
+		fmt.Printf("## 버스번호: %s ##\n", findBusNo(b.RouteID))
 		if b.PredictTime1 != "" && b.LocationNo1 != "" {
 			fmt.Printf("* 다음버스: %s분 후 (%s 정류장 전)\n", b.PredictTime1, b.LocationNo1)
 		}

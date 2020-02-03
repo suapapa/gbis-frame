@@ -2,6 +2,8 @@ package main
 
 import (
 	"bufio"
+	"encoding/xml"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -124,8 +126,30 @@ func findStationIDAndName(mobileNo string) (string, string) {
 	return "", ""
 }
 
-func findBusNoFrom(routeID string) string {
-	log.Println(routeID)
+func findBusNo(routeID string) string {
+	resp, err := http.Get(urlBusRouteServiceInfo +
+		fmt.Sprintf("?serviceKey=%s&routeId=%s", getServiceKey(), routeID))
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
+
+	var sr BusRouteInfoResponse
+	xmlDec := xml.NewDecoder(resp.Body)
+	xmlDec.Decode(&sr)
+	if sr.MsgHeader.ResultCode != "0" {
+		log.Println(sr)
+		// log.Println(sr.ComMsgHeader.ErrMsg
+		// log.Println(sr.MsgHeader.ResultMessage)
+		panic("somthing wrong in query bus routeID")
+	}
+
+	return sr.BusRouteInfoItem.RouteName
+}
+
+// TODO: will be deperecated
+func findBusNoFromFile(routeID string) string {
+	// log.Println(routeID)
 	r, err := os.Open(config.BaseInfo.Route)
 	if err != nil {
 		panic(err)
