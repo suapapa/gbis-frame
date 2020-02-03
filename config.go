@@ -2,17 +2,20 @@ package main
 
 import (
 	"encoding/json"
-	"encoding/xml"
-	"log"
-	"net/http"
 	"os"
-	"time"
+)
+
+const (
+	configFileName = "config.json"
+)
+
+var (
+	config Config
 )
 
 // Config contains current settings of program
 type Config struct {
-	ServiceKey string   `json:"servicekey"`
-	BaseInfo   baseInfo `json:"baseinfo"`
+	ServiceKey string `json:"servicekey"`
 }
 
 // Save saves config to default configFileName
@@ -32,45 +35,9 @@ func (c Config) Save() error {
 	return err
 }
 
-type baseInfo struct {
-	UpdateDate time.Time `json:"updatedate"`
-	Station    string    `json:"station"`
-	Route      string    `json:"route"`
-}
-
-const (
-	configFileName = "config.json"
-)
-
-var (
-	config Config
-)
-
 func loadConfig() error {
 	if !isConfigValid() {
-		resp, err := http.Get(urlBaseInfoService + "?serviceKey=" + getServiceKey())
-		if err != nil {
-			return err
-		}
-		defer resp.Body.Close()
-		var baseInfoResp BaseInfoResponse
-		xmlDec := xml.NewDecoder(resp.Body)
-		xmlDec.Decode(&baseInfoResp)
-
-		cleanupBaseInfoDir()
-		if fPath, err := dlBaseInfo(baseInfoResp.BaseInfoItem.StationDownloadURL); err == nil {
-			config.BaseInfo.Station = fPath
-		} else {
-			return err
-		}
-		if fPath, err := dlBaseInfo(baseInfoResp.BaseInfoItem.RouteDownloadURL); err == nil {
-			config.BaseInfo.Route = fPath
-		} else {
-			return err
-		}
-
 		config.ServiceKey = getServiceKey()
-		config.BaseInfo.UpdateDate = time.Now()
 		return config.Save()
 	}
 
@@ -83,44 +50,6 @@ func loadConfig() error {
 	err = jDec.Decode(&config)
 	if err != nil {
 		return err
-	}
-
-	// check update in base infos.
-	if flagCheckBaseInfoUpdate && time.Since(config.BaseInfo.UpdateDate) >= 24*time.Hour {
-		log.Println("check base info update")
-		resp, err := http.Get(urlBaseInfoService + "?serviceKey=" + getServiceKey())
-		if err != nil {
-			return err
-		}
-		defer resp.Body.Close()
-		var baseInfoResp BaseInfoResponse
-		xmlDec := xml.NewDecoder(resp.Body)
-		xmlDec.Decode(&baseInfoResp)
-
-		newStationFilePath := baseInfoURLtoFilePath(baseInfoResp.BaseInfoItem.StationDownloadURL)
-		newRouteFilePath := baseInfoURLtoFilePath(baseInfoResp.BaseInfoItem.RouteDownloadURL)
-		if config.BaseInfo.Station != newStationFilePath {
-			log.Println("station info updated")
-			if _, err := dlBaseInfo(baseInfoResp.BaseInfoItem.StationDownloadURL); err == nil {
-				// os.Remove(config.BaseInfo.Station)
-				config.BaseInfo.Station = newStationFilePath
-			} else {
-				panic(err)
-			}
-		}
-		if config.BaseInfo.Route != newRouteFilePath {
-			log.Println("route info updated")
-			if _, err := dlBaseInfo(baseInfoResp.BaseInfoItem.RouteDownloadURL); err == nil {
-				// os.Remove(config.BaseInfo.Route)
-				config.BaseInfo.Route = newRouteFilePath
-			} else {
-				panic(err)
-			}
-		}
-
-		config.ServiceKey = getServiceKey()
-		config.BaseInfo.UpdateDate = time.Now()
-		return config.Save()
 	}
 
 	return nil
@@ -140,13 +69,6 @@ func isConfigValid() bool {
 	err = jDec.Decode(&config)
 	if err != nil {
 		panic(err)
-	}
-
-	if !isExist(config.BaseInfo.Station) {
-		return false
-	}
-	if !isExist(config.BaseInfo.Route) {
-		return false
 	}
 
 	return true
