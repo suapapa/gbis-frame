@@ -110,8 +110,8 @@ type busArrival struct {
 }
 
 type comMsgHeader struct {
-	ErrMsg     string `xml:"errMsg"`
 	ReturnCode string `xml:"returnCode"`
+	ErrMsg     string `xml:"errMsg"`
 }
 
 type msgHeader struct {

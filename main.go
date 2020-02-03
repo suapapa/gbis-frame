@@ -7,18 +7,21 @@ import (
 	"log"
 	"net/http"
 	"sort"
+	"time"
 )
 
 var (
 	flagImageOut            bool
 	flagDebugGG             bool
 	flagCheckBaseInfoUpdate bool
+	flagLoopSecs            int
 )
 
 func init() {
 	flag.BoolVar(&flagImageOut, "i", false, "set if u want image output")
 	flag.BoolVar(&flagDebugGG, "d", false, "draw guide line for gg elements")
 	flag.BoolVar(&flagCheckBaseInfoUpdate, "u", false, "update baseinfo only if since last update is over a day")
+	flag.IntVar(&flagLoopSecs, "l", 0, "loop every given second. 0 means execute just once and exit.")
 }
 
 func main() {
@@ -31,27 +34,39 @@ func main() {
 
 	mobileNo := flag.Args()[0] // 정류장 단축번호. 예) 07-479 (H스퀘어)
 	stationID, stationName := findStationIDAndName(mobileNo)
-	resp, err := http.Get(urlBusArrivalStationService +
-		fmt.Sprintf("?serviceKey=%s&stationId=%s", getServiceKey(), stationID))
-	if err != nil {
-		panic(err)
-	}
-	defer resp.Body.Close()
-	var sr BusArrivalStationResponse
-	xmlDec := xml.NewDecoder(resp.Body)
-	xmlDec.Decode(&sr)
-	if sr.MsgHeader.ResultCode != "0" {
-		log.Println(sr)
-		// log.Println(sr.ComMsgHeader.ErrMsg
-		// log.Println(sr.MsgHeader.ResultMessage)
-		panic("somthing wrong in query bus arrival")
+
+	queryBusArrival := func() {
+		resp, err := http.Get(urlBusArrivalStationService +
+			fmt.Sprintf("?serviceKey=%s&stationId=%s", getServiceKey(), stationID))
+		if err != nil {
+			panic(err)
+		}
+		defer resp.Body.Close()
+		var sr BusArrivalStationResponse
+		xmlDec := xml.NewDecoder(resp.Body)
+		xmlDec.Decode(&sr)
+		rc := sr.MsgHeader.ResultCode
+		if rc != "0" && rc != "4" { // 4 는 결과없음 (막차 종료 등...)
+			log.Println(sr)
+			panic("somthing wrong in query bus arrival")
+		}
+
+		sort.Sort(sr.BusArrivalList) // 도착 시간순으로 버스목록 정렬
+		if !flagImageOut {
+			printBusArrivalInfo(stationName, sr.BusArrivalList)
+		} else {
+			drawBusArrivalInfo(stationName, sr.BusArrivalList)
+		}
 	}
 
-	sort.Sort(sr.BusArrivalList) // 도착 시간순으로 버스목록 정렬
-	if !flagImageOut {
-		printBusArrivalInfo(stationName, sr.BusArrivalList)
+	if flagLoopSecs <= 0 {
+		queryBusArrival()
 	} else {
-		drawBusArrivalInfo(stationName, sr.BusArrivalList)
+		tk := time.NewTicker(time.Duration(flagLoopSecs) * time.Second)
+		go queryBusArrival()
+		for range tk.C {
+			go queryBusArrival()
+		}
 	}
 }
 
