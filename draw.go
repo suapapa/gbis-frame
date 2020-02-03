@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"path/filepath"
+	"reflect"
 
 	"github.com/fogleman/gg"
 )
@@ -12,7 +13,28 @@ const (
 	panelH = 640
 )
 
+var (
+	lastBuses []busArrival
+	firstDraw = true
+)
+
 func drawBusArrivalInfo(stationName string, buses []busArrival) {
+	if !firstDraw && len(buses) == len(lastBuses) {
+		same := true
+		for i, b := range buses {
+			if !reflect.DeepEqual(b, lastBuses[i]) {
+				same = false
+				break
+			}
+		}
+		if same {
+			// log.Println("same contents. skip drawing")
+			return
+		}
+		// log.Println("update drawing")
+	}
+	firstDraw = false
+
 	dc := gg.NewContext(panelW, panelH)
 	dc.SetRGB(1, 1, 1)
 	dc.Clear()
@@ -42,6 +64,7 @@ func drawBusArrivalInfo(stationName string, buses []busArrival) {
 		yOffset += 10
 	}
 
+	lastBuses = buses
 	dc.SavePNG("out.png")
 }
 
