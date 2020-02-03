@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 )
 
 func findStationIDAndName(mobileNo string) (string, string) {
+	mobileNo = strings.Replace(mobileNo, "-", "", -1)
 	resp, err := http.Get(urlBusStationService +
 		fmt.Sprintf("?serviceKey=%s&keyword=%s", getServiceKey(), mobileNo))
 	if err != nil {
