@@ -31,7 +31,7 @@ func main() {
 
 	mobileNo := flag.Args()[0] // 정류장 단축번호. 예) 07-479 (H스퀘어)
 	stationID, stationName := findStationIDAndName(mobileNo)
-	resp, err := http.Get(urlBusArrivalServiceStation +
+	resp, err := http.Get(urlBusArrivalStationService +
 		fmt.Sprintf("?serviceKey=%s&stationId=%s", getServiceKey(), stationID))
 	if err != nil {
 		panic(err)

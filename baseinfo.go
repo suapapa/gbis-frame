@@ -97,6 +97,28 @@ func scanBaseInfoLines(data []byte, atEOF bool) (advance int, token []byte, err 
 }
 
 func findStationIDAndName(mobileNo string) (string, string) {
+	resp, err := http.Get(urlBusStationService +
+		fmt.Sprintf("?serviceKey=%s&keyword=%s", getServiceKey(), mobileNo))
+	if err != nil {
+		panic(err)
+	}
+	defer resp.Body.Close()
+
+	var sr BusStationResponse
+	xmlDec := xml.NewDecoder(resp.Body)
+	xmlDec.Decode(&sr)
+	if sr.MsgHeader.ResultCode != "0" {
+		log.Println(sr)
+		// log.Println(sr.ComMsgHeader.ErrMsg
+		// log.Println(sr.MsgHeader.ResultMessage)
+		panic("somthing wrong in query station")
+	}
+
+	return sr.BusStationList.StationID, sr.BusStationList.StationName
+}
+
+// TODO: will be deprecated
+func findStationIDAndNameFromFile(mobileNo string) (string, string) {
 	mobileNo = strings.Replace(mobileNo, "-", "", -1)
 
 	r, err := os.Open(config.BaseInfo.Station)
@@ -127,7 +149,7 @@ func findStationIDAndName(mobileNo string) (string, string) {
 }
 
 func findBusNo(routeID string) string {
-	resp, err := http.Get(urlBusRouteServiceInfo +
+	resp, err := http.Get(urlBusRouteInfoService +
 		fmt.Sprintf("?serviceKey=%s&routeId=%s", getServiceKey(), routeID))
 	if err != nil {
 		panic(err)
