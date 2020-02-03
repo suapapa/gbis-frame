@@ -11,9 +11,8 @@ import (
 
 // Config contains current settings of program
 type Config struct {
-	BaseInfoServiceKey   string   `json:"baseinfoServicekey"`
-	BusArrivalServiceKey string   `json:"busarrivalServicekey"`
-	BaseInfo             baseInfo `json:"baseinfo"`
+	ServiceKey string   `json:"servicekey"`
+	BaseInfo   baseInfo `json:"baseinfo"`
 }
 
 // Save saves config to default configFileName
@@ -49,7 +48,7 @@ var (
 
 func loadConfig() error {
 	if !isConfigValid() {
-		resp, err := http.Get(urlBaseInfoService + "?serviceKey=" + getBaseInfoServiceKey())
+		resp, err := http.Get(urlBaseInfoService + "?serviceKey=" + getServiceKey())
 		if err != nil {
 			return err
 		}
@@ -70,8 +69,7 @@ func loadConfig() error {
 			return err
 		}
 
-		config.BaseInfoServiceKey = getBaseInfoServiceKey()
-		config.BusArrivalServiceKey = getBusArrivalServiceKey()
+		config.ServiceKey = getServiceKey()
 		config.BaseInfo.UpdateDate = time.Now()
 		return config.Save()
 	}
@@ -90,7 +88,7 @@ func loadConfig() error {
 	// check update in base infos.
 	if flagCheckBaseInfoUpdate && time.Since(config.BaseInfo.UpdateDate) >= 24*time.Hour {
 		log.Println("check base info update")
-		resp, err := http.Get(urlBaseInfoService + "?serviceKey=" + getBaseInfoServiceKey())
+		resp, err := http.Get(urlBaseInfoService + "?serviceKey=" + getServiceKey())
 		if err != nil {
 			return err
 		}
@@ -120,8 +118,7 @@ func loadConfig() error {
 			}
 		}
 
-		config.BaseInfoServiceKey = getBaseInfoServiceKey()
-		config.BusArrivalServiceKey = getBusArrivalServiceKey()
+		config.ServiceKey = getServiceKey()
 		config.BaseInfo.UpdateDate = time.Now()
 		return config.Save()
 	}
@@ -155,27 +152,14 @@ func isConfigValid() bool {
 	return true
 }
 
-func getBaseInfoServiceKey() string {
-	serviceKey := os.Getenv("BASEINFOSERVICEKEY")
+func getServiceKey() string {
+	serviceKey := os.Getenv("SERVICEKEY")
 	if serviceKey != "" {
 		return serviceKey
 	}
 
-	if config.BaseInfoServiceKey != "" {
-		return config.BaseInfoServiceKey
-	}
-
-	panic("no servicekey")
-}
-
-func getBusArrivalServiceKey() string {
-	serviceKey := os.Getenv("BUSARRIVALSERVICEKEY")
-	if serviceKey != "" {
-		return serviceKey
-	}
-
-	if config.BusArrivalServiceKey != "" {
-		return config.BusArrivalServiceKey
+	if config.ServiceKey != "" {
+		return config.ServiceKey
 	}
 
 	panic("no servicekey")
