@@ -30,7 +30,6 @@ func init() {
 
 func main() {
 	flag.Parse()
-
 	err := loadConfig()
 	if err != nil {
 		panic(err)

@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/xml"
-	"strconv"
 )
 
 // BusStationResponse represents response of http://openapi.gbis.go.kr/ws/rest/busstationservice
@@ -65,13 +64,6 @@ type busArrivalList []busArrival
 func (l busArrivalList) Len() int      { return len(l) }
 func (l busArrivalList) Swap(i, j int) { l[i], l[j] = l[j], l[i] }
 func (l busArrivalList) Less(i, j int) bool {
-	atoi := func(v string) int {
-		n, err := strconv.Atoi(v)
-		if err != nil {
-			panic(err)
-		}
-		return n
-	}
 	bI, bJ := l[i], l[j]
 	if atoi(bI.PredictTime1) < atoi(bJ.PredictTime1) {
 		return true

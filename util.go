@@ -2,6 +2,7 @@ package main
 
 import (
 	"os"
+	"strconv"
 )
 
 func isExist(path string) bool {
@@ -10,4 +11,12 @@ func isExist(path string) bool {
 		return false
 	}
 	return true
+}
+
+func atoi(v string) int {
+	n, err := strconv.Atoi(v)
+	if err != nil {
+		panic(err)
+	}
+	return n
 }
