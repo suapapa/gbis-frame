@@ -6,9 +6,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
-	"runtime"
-	"runtime/pprof"
 	"sort"
 	"time"
 
@@ -34,23 +31,10 @@ func init() {
 	flag.BoolVar(&flagDebugGG, "d", false, "draw guide line for gg elements")
 	flag.BoolVar(&flagCheckBaseInfoUpdate, "u", false, "update baseinfo only if since last update is over a day")
 	flag.IntVar(&flagLoopSecs, "l", 0, "loop every given second. 0 means execute just once and exit.")
-	flag.StringVar(&flagProfileCPU, "cpuprofile", "", "write cpu profile to `file`")
-	flag.StringVar(&flagProfileMem, "memprofile", "", "write memory profile to `file`")
 }
 
 func main() {
 	flag.Parse()
-	if flagProfileCPU != "" {
-		f, err := os.Create(flagProfileCPU)
-		if err != nil {
-			log.Fatal("could not create CPU profile: ", err)
-		}
-		defer f.Close()
-		if err := pprof.StartCPUProfile(f); err != nil {
-			log.Fatal("could not start CPU profile: ", err)
-		}
-		defer pprof.StopCPUProfile()
-	}
 
 	go func() {
 		log.Println(http.ListenAndServe("localhost:6060", nil))
@@ -95,18 +79,6 @@ func main() {
 		go queryBusArrival()
 		for range tk.C {
 			go queryBusArrival()
-		}
-	}
-
-	if flagProfileMem != "" {
-		f, err := os.Create(flagProfileMem)
-		if err != nil {
-			log.Fatal("could not create memory profile: ", err)
-		}
-		defer f.Close()
-		runtime.GC() // get up-to-date statistics
-		if err := pprof.WriteHeapProfile(f); err != nil {
-			log.Fatal("could not write memory profile: ", err)
 		}
 	}
 }
