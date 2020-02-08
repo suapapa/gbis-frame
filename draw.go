@@ -48,8 +48,8 @@ func drawBusArrivalInfo(buses []busArrival) {
 		}
 		// yOffset := float64(160 * i)
 		yOffset += 10
-		drawImage(dc, "directions_bus-48px.png", 10, 70+yOffset)                      // 아이콘
-		drawStringAnchored(dc, findBusNo(b.RouteID), 42, 58, 70+24-5+yOffset, 0, 0.5) // 버스번호
+		drawImage(dc, filepath.Join("_resource", "directions_bus-48px.png"), 10, 70+yOffset) // 아이콘
+		drawStringAnchored(dc, findBusNo(b.RouteID), 42, 58, 70+24-5+yOffset, 0, 0.5)        // 버스번호
 		yOffset += 60
 		if b.PredictTime1 != "" && b.LocationNo1 != "" {
 			drawString(dc, "다음버스", 24, 60, 70+24-5+yOffset)
@@ -70,7 +70,7 @@ func drawBusArrivalInfo(buses []busArrival) {
 }
 
 func drawImage(dc *gg.Context, imgName string, x, y float64) {
-	img, err := gg.LoadImage(filepath.Join("_resource", imgName))
+	img, err := loadImage(imgName)
 	if err != nil {
 		panic(err)
 	}
@@ -80,18 +80,22 @@ func drawImage(dc *gg.Context, imgName string, x, y float64) {
 
 func drawString(dc *gg.Context, text string, fontSize, x, y float64) {
 	dc.SetRGB(0, 0, 0)
-	if err := dc.LoadFontFace(filepath.Join("_resource", "BMDOHYEON_ttf.ttf"), fontSize); err != nil {
+	ff, err := loadFontFace(filepath.Join("_resource", "BMDOHYEON_ttf.ttf"), fontSize)
+	if err != nil {
 		panic(err)
 	}
+	dc.SetFontFace(ff)
 	dc.DrawString(text, x, y)
 	drawDebugCrossHair(dc, x, y)
 }
 
 func drawStringAnchored(dc *gg.Context, text string, fontSize, x, y, ax, ay float64) {
 	dc.SetRGB(0, 0, 0)
-	if err := dc.LoadFontFace(filepath.Join("_resource", "BMDOHYEON_ttf.ttf"), fontSize); err != nil {
+	ff, err := loadFontFace(filepath.Join("_resource", "BMDOHYEON_ttf.ttf"), fontSize)
+	if err != nil {
 		panic(err)
 	}
+	dc.SetFontFace(ff)
 	dc.DrawStringAnchored(text, x, y, ax, ay)
 	drawDebugCrossHair(dc, x, y)
 }
