@@ -1,11 +1,15 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"image"
 	"path/filepath"
 	"reflect"
 
 	"github.com/fogleman/gg"
+	"github.com/golang/freetype/truetype"
+	"golang.org/x/image/font"
 )
 
 const (
@@ -16,7 +20,15 @@ const (
 var (
 	lastBuses []busArrival
 	firstDraw = true
+
+	icons map[string]image.Image
+	fonts map[float64]font.Face
 )
+
+func init() {
+	icons = make(map[string]image.Image)
+	fonts = make(map[float64]font.Face)
+}
 
 func drawBusArrivalInfo(buses []busArrival) {
 	if !firstDraw && len(buses) == len(lastBuses) {
@@ -70,17 +82,26 @@ func drawBusArrivalInfo(buses []busArrival) {
 }
 
 func drawImage(dc *gg.Context, imgName string, x, y float64) {
-	img, err := loadImage(imgName)
-	if err != nil {
-		panic(err)
+	var img image.Image
+	var err error
+	if i, ok := icons[imgName]; ok {
+		img = i
+	} else {
+		img, err = loadImage(imgName)
+		if err != nil {
+			panic(err)
+		}
+		icons[imgName] = img
 	}
+
 	dc.DrawImage(img, int(x), int(y))
 	drawDebugCrossHair(dc, x, y)
 }
 
 func drawString(dc *gg.Context, text string, fontSize, x, y float64) {
 	dc.SetRGB(0, 0, 0)
-	ff, err := loadFontFace(filepath.Join("_resource", "BMDOHYEON_ttf.ttf"), fontSize)
+	// ff, err := loadFontFace(filepath.Join("_resource", "BMDOHYEON_ttf.ttf"), fontSize)
+	ff, err := loadFontFace(fontSize)
 	if err != nil {
 		panic(err)
 	}
@@ -91,7 +112,7 @@ func drawString(dc *gg.Context, text string, fontSize, x, y float64) {
 
 func drawStringAnchored(dc *gg.Context, text string, fontSize, x, y, ax, ay float64) {
 	dc.SetRGB(0, 0, 0)
-	ff, err := loadFontFace(filepath.Join("_resource", "BMDOHYEON_ttf.ttf"), fontSize)
+	ff, err := loadFontFace(fontSize)
 	if err != nil {
 		panic(err)
 	}
@@ -110,4 +131,30 @@ func drawDebugCrossHair(dc *gg.Context, x, y float64) {
 	dc.Stroke()
 	dc.DrawLine(x, y-10, x, y+10)
 	dc.Stroke()
+}
+
+func loadImage(name string) (image.Image, error) {
+	r := bytes.NewReader(MustAsset(name))
+	im, _, err := image.Decode(r)
+	return im, err
+}
+
+func loadFontFace(points float64) (font.Face, error) {
+	path := filepath.Join("_resource", "BMDOHYEON_ttf.ttf")
+	f, err := truetype.Parse(MustAsset(path))
+	if err != nil {
+		return nil, err
+	}
+	var face font.Face
+	if ff, ok := fonts[points]; ok {
+		face = ff
+	} else {
+		face = truetype.NewFace(f, &truetype.Options{
+			Size: points,
+			// Hinting: font.HintingFull,
+		})
+		fonts[points] = face
+	}
+
+	return face, nil
 }
