@@ -21,13 +21,13 @@ var (
 	lastBuses []busArrival
 	firstDraw = true
 
-	icons map[string]image.Image
-	fonts map[float64]font.Face
+	icons map[string]*image.Image
+	fonts map[float64]*font.Face
 )
 
 func init() {
-	icons = make(map[string]image.Image)
-	fonts = make(map[float64]font.Face)
+	icons = make(map[string]*image.Image)
+	fonts = make(map[float64]*font.Face)
 }
 
 func drawBusArrivalInfo(buses []busArrival) {
@@ -82,7 +82,7 @@ func drawBusArrivalInfo(buses []busArrival) {
 }
 
 func drawImage(dc *gg.Context, imgName string, x, y float64) {
-	var img image.Image
+	var img *image.Image
 	var err error
 	if i, ok := icons[imgName]; ok {
 		img = i
@@ -94,7 +94,7 @@ func drawImage(dc *gg.Context, imgName string, x, y float64) {
 		icons[imgName] = img
 	}
 
-	dc.DrawImage(img, int(x), int(y))
+	dc.DrawImage(*img, int(x), int(y))
 	drawDebugCrossHair(dc, x, y)
 }
 
@@ -133,28 +133,25 @@ func drawDebugCrossHair(dc *gg.Context, x, y float64) {
 	dc.Stroke()
 }
 
-func loadImage(name string) (image.Image, error) {
+func loadImage(name string) (*image.Image, error) {
 	r := bytes.NewReader(MustAsset(name))
 	im, _, err := image.Decode(r)
-	return im, err
+	return &im, err
 }
 
 func loadFontFace(points float64) (font.Face, error) {
+	if ff, ok := fonts[points]; ok {
+		return *ff, nil
+	}
 	path := filepath.Join("_resource", "BMDOHYEON_ttf.ttf")
 	f, err := truetype.Parse(MustAsset(path))
 	if err != nil {
 		return nil, err
 	}
-	var face font.Face
-	if ff, ok := fonts[points]; ok {
-		face = ff
-	} else {
-		face = truetype.NewFace(f, &truetype.Options{
-			Size: points,
-			// Hinting: font.HintingFull,
-		})
-		fonts[points] = face
-	}
-
-	return face, nil
+	nface := truetype.NewFace(f, &truetype.Options{
+		Size: points,
+		// Hinting: font.HintingFull,
+	})
+	fonts[points] = &nface
+	return nface, nil
 }
