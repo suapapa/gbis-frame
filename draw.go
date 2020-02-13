@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"image"
+	"os/exec"
 	"path/filepath"
 	"reflect"
 
@@ -77,8 +78,10 @@ func drawBusArrivalInfo(buses []busArrival) {
 	}
 
 	lastBuses = buses
-	dc.SavePNG("out.png")
+	dc.SavePNG("/tmp/out.png")
 	// TODO: send the image to panel
+	cmd := exec.Command("python3", "_python/epd7in5_update.py", "/tmp/out.png")
+	cmd.Run()
 }
 
 func drawImage(dc *gg.Context, imgName string, x, y float64) {
@@ -149,8 +152,8 @@ func loadFontFace(points float64) (font.Face, error) {
 		return nil, err
 	}
 	nface := truetype.NewFace(f, &truetype.Options{
-		Size: points,
-		// Hinting: font.HintingFull,
+		Size:    points,
+		Hinting: font.HintingNone,
 	})
 	fonts[points] = &nface
 	return nface, nil
