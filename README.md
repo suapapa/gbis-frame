@@ -1,4 +1,4 @@
-# go-gbis
+# gbis-frame
 경기 버스 정보 상황판: 집앞 버스 정류장의 버스 정보 상황판을 집안으로
 
 ## requirement
@@ -12,7 +12,7 @@
 ## run
 
     SERVICEKEY="your_baseinfo_servicekey" \
-    ./go-gbis
+    ./gbis-frame
 
 ## references
 * [공공데이터포털](https://www.data.go.kr/)

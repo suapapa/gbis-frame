@@ -1,4 +1,4 @@
-module github.com/suapapa/go-gbis
+module github.com/suapapa/gbis-frame
 
 go 1.13
 
