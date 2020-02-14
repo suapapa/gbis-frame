@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"image"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"reflect"
@@ -32,6 +33,10 @@ func init() {
 }
 
 func drawBusArrivalInfo(buses []busArrival) {
+	if flagImageOut == "" {
+		flagImageOut = "/tmp/out.png"
+	}
+
 	if !firstDraw && len(buses) == len(lastBuses) {
 		same := true
 		for i, b := range buses {
@@ -78,10 +83,18 @@ func drawBusArrivalInfo(buses []busArrival) {
 	}
 
 	lastBuses = buses
-	dc.SavePNG("/tmp/out.png")
-	// TODO: send the image to panel
-	cmd := exec.Command("python3", "_python/epd7in5_update.py", "/tmp/out.png")
-	cmd.Run()
+	dc.SavePNG(flagImageOut)
+	if flagUpdatePanel {
+		dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+		if err != nil {
+			panic(err)
+		}
+		cmd := exec.Command("python3", filepath.Join(dir, "_python", "epd7in5_update.py"), flagImageOut)
+		err = cmd.Run()
+		if err != nil {
+			panic(err)
+		}
+	}
 }
 
 func drawImage(dc *gg.Context, imgName string, x, y float64) {
@@ -153,7 +166,8 @@ func loadFontFace(points float64) (font.Face, error) {
 	}
 	nface := truetype.NewFace(f, &truetype.Options{
 		Size:    points,
-		Hinting: font.HintingNone,
+		Hinting: font.HintingFull,
+		// Hinting: font.HintingNone,
 	})
 	fonts[points] = &nface
 	return nface, nil

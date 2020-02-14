@@ -1,0 +1,12 @@
+[Unit]
+Description=gbis panel
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=5s
+Environment="SERVICEKEY=1234567890"
+ExecStart=/home/pi/gbis-frame -l 30 -e 07479
+
+[Install]
+WantedBy=multi-user.target

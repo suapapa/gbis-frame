@@ -13,7 +13,8 @@ import (
 )
 
 var (
-	flagImageOut            bool
+	flagImageOut            string
+	flagUpdatePanel         bool
 	flagDebugGG             bool
 	flagCheckBaseInfoUpdate bool
 	flagLoopSecs            int
@@ -25,7 +26,8 @@ var (
 )
 
 func init() {
-	flag.BoolVar(&flagImageOut, "i", false, "set if u want image output")
+	flag.StringVar(&flagImageOut, "i", "", "output image path")
+	flag.BoolVar(&flagUpdatePanel, "e", false, "set if u want update panel")
 	flag.BoolVar(&flagDebugGG, "d", false, "draw guide line for gg elements")
 	flag.BoolVar(&flagCheckBaseInfoUpdate, "u", false, "update baseinfo only if since last update is over a day")
 	flag.IntVar(&flagLoopSecs, "l", 0, "loop every given second. 0 means execute just once and exit.")
@@ -63,10 +65,10 @@ func main() {
 		}
 
 		sort.Sort(sr.BusArrivalList) // 도착 시간순으로 버스목록 정렬
-		if !flagImageOut {
-			printBusArrivalInfo(sr.BusArrivalList)
-		} else {
+		if flagImageOut != "" || flagUpdatePanel {
 			drawBusArrivalInfo(sr.BusArrivalList)
+		} else {
+			printBusArrivalInfo(sr.BusArrivalList)
 		}
 	}
 
