@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"image"
+	"log"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -36,6 +37,7 @@ func drawBusArrivalInfo(buses []busArrival) {
 	if flagImageOut == "" {
 		flagImageOut = "/tmp/out.png"
 	}
+	log.Println("drawBusArrivalInfo to", flagImageOut)
 
 	if !firstDraw && len(buses) == len(lastBuses) {
 		same := true
@@ -85,6 +87,7 @@ func drawBusArrivalInfo(buses []busArrival) {
 	lastBuses = buses
 	dc.SavePNG(flagImageOut)
 	if flagUpdatePanel {
+		log.Println("update Panel start")
 		dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
 		if err != nil {
 			panic(err)
@@ -94,6 +97,7 @@ func drawBusArrivalInfo(buses []busArrival) {
 		if err != nil {
 			panic(err)
 		}
+		log.Println("update Panel done")
 	}
 }
 
