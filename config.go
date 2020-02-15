@@ -3,15 +3,22 @@ package main
 import (
 	"encoding/json"
 	"os"
-)
-
-const (
-	configFileName = "config.json"
+	"path/filepath"
 )
 
 var (
+	configFileName = "config.json"
+
 	config Config
 )
+
+func init() {
+	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
+	if err != nil {
+		panic(err)
+	}
+	configFileName = filepath.Join(dir, "config.json")
+}
 
 // Config contains current settings of program
 type Config struct {
@@ -77,10 +84,12 @@ func isConfigValid() bool {
 func getServiceKey() string {
 	serviceKey := os.Getenv("SERVICEKEY")
 	if serviceKey != "" {
+		// log.Println("serviceKey:", serviceKey)
 		return serviceKey
 	}
 
 	if config.ServiceKey != "" {
+		// log.Println("config serviceKey:", config.ServiceKey)
 		return config.ServiceKey
 	}
 
