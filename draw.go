@@ -48,7 +48,7 @@ func drawBusArrivalInfo(buses []busArrival) {
 			}
 		}
 		if same {
-			// log.Println("same contents. skip drawing")
+			log.Println("same contents. skip drawing")
 			return
 		}
 		// log.Println("update drawing")

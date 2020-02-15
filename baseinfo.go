@@ -8,6 +8,14 @@ import (
 	"strings"
 )
 
+var (
+	busNo map[string]string
+)
+
+func init() {
+	busNo = make(map[string]string)
+}
+
 func findStationIDAndName(mobileNo string) (string, string) {
 	mobileNo = strings.Replace(mobileNo, "-", "", -1)
 	resp, err := http.Get(urlBusStationService +
@@ -31,6 +39,10 @@ func findStationIDAndName(mobileNo string) (string, string) {
 }
 
 func findBusNo(routeID string) string {
+	if bn, ok := busNo[routeID]; ok {
+		return bn
+	}
+
 	resp, err := http.Get(urlBusRouteInfoService +
 		fmt.Sprintf("?serviceKey=%s&routeId=%s", getServiceKey(), routeID))
 	if err != nil {
@@ -48,5 +60,6 @@ func findBusNo(routeID string) string {
 		panic("somthing wrong in query bus routeID")
 	}
 
+	busNo[routeID] = sr.BusRouteInfoItem.RouteName
 	return sr.BusRouteInfoItem.RouteName
 }
