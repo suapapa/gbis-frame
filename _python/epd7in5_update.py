@@ -23,9 +23,8 @@ try:
     # epd.Clear()
     
     logging.info("3.read bmp file")
-    Himage = Image.open(sys.argv[1])
-    epd.display(epd.getbuffer(Himage))
-    time.sleep(2)
+    image = Image.open(sys.argv[1])
+    epd.display(epd.getbuffer(image))
     
     logging.info("Goto Sleep...")
     epd.sleep()

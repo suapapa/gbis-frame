@@ -158,37 +158,8 @@ class EPD:
                         buf[int((newx + newy*self.width) / 4)] |= 0x40 >> (y % 4 * 2)
                     else:                           # white
                         buf[int((newx + newy*self.width) / 4)] |= 0xC0 >> (y % 4 * 2)
-        return buf    
-        
-    def display_bak(self, image):
-        self.send_command(0x10)
-        for i in range(0, int(self.width / 4 * self.height)):
-            temp1 = image[i]
-            j = 0
-            while (j < 4):
-                if ((temp1 & 0xC0) == 0xC0):
-                    temp2 = 0x03
-                elif ((temp1 & 0xC0) == 0x00):
-                    temp2 = 0x00
-                else:
-                    temp2 = 0x04
-                temp2 = (temp2 << 4) & 0xFF
-                temp1 = (temp1 << 2) & 0xFF
-                j += 1
-                if((temp1 & 0xC0) == 0xC0):
-                    temp2 |= 0x03
-                elif ((temp1 & 0xC0) == 0x00):
-                    temp2 |= 0x00
-                else:
-                    temp2 |= 0x04
-                temp1 = (temp1 << 2) & 0xFF
-                self.send_data(temp2)
-                j += 1
-                
-        self.send_command(0x12)
-        epdconfig.delay_ms(100)
-        self.ReadBusy()
-        
+        return buf
+
     def display(self, image):
         ds = []
         for i in range(0, int(self.width / 4 * self.height)):
