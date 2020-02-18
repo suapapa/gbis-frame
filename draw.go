@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"image"
 	"log"
-	"os"
-	"os/exec"
 	"path/filepath"
 	"reflect"
 
@@ -86,19 +84,7 @@ func drawBusArrivalInfo(buses []busArrival) {
 
 	lastBuses = buses
 	dc.SavePNG(flagImageOut)
-	if flagUpdatePanel {
-		log.Println("update Panel start")
-		dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
-		if err != nil {
-			panic(err)
-		}
-		cmd := exec.Command("python3", filepath.Join(dir, "_python", "epd7in5_update.py"), flagImageOut)
-		err = cmd.Run()
-		if err != nil {
-			panic(err)
-		}
-		log.Println("update Panel done")
-	}
+	updateEpd7in5withPythonScript(flagImageOut)
 }
 
 func drawImage(dc *gg.Context, imgName string, x, y float64) {
