@@ -64,6 +64,9 @@ type busArrivalList []busArrival
 func (l busArrivalList) Len() int      { return len(l) }
 func (l busArrivalList) Swap(i, j int) { l[i], l[j] = l[j], l[i] }
 func (l busArrivalList) Less(i, j int) bool {
+	if flagStar != "" && flagStar == findBusNo(l[i].RouteID) {
+		return true
+	}
 	bI, bJ := l[i], l[j]
 	if atoi(bI.PredictTime1) < atoi(bJ.PredictTime1) {
 		return true

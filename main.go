@@ -18,6 +18,7 @@ var (
 	flagDebugGG             bool
 	flagCheckBaseInfoUpdate bool
 	flagLoopSecs            int
+	flagStar                string
 
 	flagProfileCPU string
 	flagProfileMem string
@@ -31,6 +32,7 @@ func init() {
 	flag.BoolVar(&flagDebugGG, "d", false, "draw guide line for gg elements")
 	flag.BoolVar(&flagCheckBaseInfoUpdate, "u", false, "update baseinfo only if since last update is over a day")
 	flag.IntVar(&flagLoopSecs, "l", 0, "loop every given second. 0 means execute just once and exit.")
+	flag.StringVar(&flagStar, "s", "", "pick a bus which always display on top")
 }
 
 func main() {
