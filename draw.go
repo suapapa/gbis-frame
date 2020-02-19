@@ -69,7 +69,7 @@ func drawBusArrivalInfo(buses []busArrival) {
 		// yOffset := float64(160 * i)
 		yOffset += 10
 		drawImage(dc, filepath.Join("_resource", "directions_bus-48px.png"), 10, 70+yOffset) // 아이콘
-		drawStringAnchored(dc, findBusNo(b.RouteID), 42, 58, 70+24-5+yOffset, 0, 0.5)        // 버스번호
+		drawStringAnchored(dc, findBusNo(b.RouteID), 42, 58, 70+24-5+yOffset, 0, 0.4)        // 버스번호
 		yOffset += 60
 		if b.PredictTime1 != "" && b.LocationNo1 != "" {
 			drawString(dc, "다음버스", 24, 60, 70+24-5+yOffset)
