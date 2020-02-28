@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"image"
+	"image/color"
 	"log"
 	"path/filepath"
 	"reflect"
@@ -53,10 +54,14 @@ func drawBusArrivalInfo(buses []busArrival) {
 	firstDraw = false
 
 	dc := gg.NewContext(panelW, panelH)
-	dc.SetRGB(1, 1, 1)
+	dc.SetColor(color.Black)
 	dc.Clear()
 
-	drawStringAnchored(dc, stationName, 32, panelW/2, 30, 0.5, 0.5) // 역이름
+	dc.SetColor(color.White)
+	dc.DrawRectangle(5, 70, 384-10, 640-70-5)
+	dc.Fill()
+
+	drawStringAnchored(dc, stationName, 32, panelW/2, 30, 0.5, 0.5, color.White) // 역이름
 
 	var yOffset float64
 	for _, b := range buses {
@@ -65,8 +70,8 @@ func drawBusArrivalInfo(buses []busArrival) {
 		}
 		// yOffset := float64(160 * i)
 		yOffset += 10
-		drawImage(dc, filepath.Join("_resource", "directions_bus-48px.png"), 10, 70+yOffset) // 아이콘
-		drawStringAnchored(dc, findBusNo(b.RouteID), 42, 58, 70+24-5+yOffset, 0, 0.4)        // 버스번호
+		drawImage(dc, filepath.Join("_resource", "directions_bus-48px.png"), 10, 70+yOffset)       // 아이콘
+		drawStringAnchored(dc, findBusNo(b.RouteID), 42, 58, 70+24-5+yOffset, 0, 0.4, color.Black) // 버스번호
 		yOffset += 60
 		if b.PredictTime1 != "" && b.LocationNo1 != "" {
 			drawString(dc, "다음버스", 24, 60, 70+24-5+yOffset)
@@ -122,8 +127,8 @@ func drawString(dc *gg.Context, text string, fontSize, x, y float64) {
 	drawDebugCrossHair(dc, x, y)
 }
 
-func drawStringAnchored(dc *gg.Context, text string, fontSize, x, y, ax, ay float64) {
-	dc.SetRGB(0, 0, 0)
+func drawStringAnchored(dc *gg.Context, text string, fontSize, x, y, ax, ay float64, c color.Color) {
+	dc.SetColor(c)
 	ff, err := loadFontFace(fontSize)
 	if err != nil {
 		panic(err)

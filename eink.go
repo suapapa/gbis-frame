@@ -14,20 +14,25 @@ var (
 	dev *epd7in5.Dev
 )
 
-func init() {
+func initHW() error {
+	if !flagUpdatePanel {
+		return nil
+	}
+
 	if _, err := host.Init(); err != nil {
-		panic(err)
+		return err
 	}
 
 	s, err := spireg.Open("")
 	if err != nil {
-		panic(err)
+		return err
 	}
 
 	dev, err = epd7in5.NewSPIHat(s)
 	if err != nil {
-		panic(err)
+		return err
 	}
+	return nil
 }
 
 func updatePanel(img image.Image) {

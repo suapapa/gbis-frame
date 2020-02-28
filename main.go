@@ -38,6 +38,10 @@ func init() {
 func main() {
 	flag.Parse()
 
+	if err := initHW(); err != nil {
+		panic(err)
+	}
+
 	go func() {
 		log.Println(http.ListenAndServe(":6060", nil))
 	}()
