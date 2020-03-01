@@ -5,13 +5,13 @@ import (
 	"image/color"
 
 	"github.com/disintegration/imaging"
-	"github.com/suapapa/go_devices/epd7in5"
+	"github.com/suapapa/go_devices/epd7in5v2"
 	"periph.io/x/periph/conn/spi/spireg"
 	"periph.io/x/periph/host"
 )
 
 var (
-	dev *epd7in5.Dev
+	dev *epd7in5v2.Dev
 )
 
 func initHW() error {
@@ -28,7 +28,7 @@ func initHW() error {
 		return err
 	}
 
-	dev, err = epd7in5.NewSPIHat(s)
+	dev, err = epd7in5v2.NewSPIHat(s)
 	if err != nil {
 		return err
 	}

@@ -15,8 +15,8 @@ import (
 )
 
 const (
-	panelW = 384
-	panelH = 640
+	panelW = 480
+	panelH = 800
 )
 
 var (
@@ -54,14 +54,14 @@ func drawBusArrivalInfo(buses []busArrival) {
 	firstDraw = false
 
 	dc := gg.NewContext(panelW, panelH)
-	dc.SetColor(color.Black)
+	dc.SetColor(color.White)
 	dc.Clear()
 
-	dc.SetColor(color.White)
-	dc.DrawRectangle(5, 70, 384-10, 640-70-5)
+	dc.SetColor(color.Black)
+	dc.DrawRectangle(0, 0, 480, 80)
 	dc.Fill()
 
-	drawStringAnchored(dc, stationName, 32, panelW/2, 30, 0.5, 0.5, color.White) // 역이름
+	drawStringAnchored(dc, stationName, 40, panelW/2, 30, 0.5, 0.5, color.White) // 역이름
 
 	var yOffset float64
 	for _, b := range buses {
@@ -69,21 +69,31 @@ func drawBusArrivalInfo(buses []busArrival) {
 			break
 		}
 		// yOffset := float64(160 * i)
-		yOffset += 10
-		drawImage(dc, filepath.Join("_resource", "directions_bus-48px.png"), 10, 70+yOffset)       // 아이콘
-		drawStringAnchored(dc, findBusNo(b.RouteID), 42, 58, 70+24-5+yOffset, 0, 0.4, color.Black) // 버스번호
+		yOffset += 20
+		drawImage(dc, filepath.Join("_resource", "directions_bus-48px.png"), 12, 82+yOffset) // 아이콘
+		drawStringAnchored(dc, findBusNo(b.RouteID), 42,
+			70, 80+24-5+yOffset, 0, 0.4, color.Black,
+		) // 버스번호
 		yOffset += 60
 		if b.PredictTime1 != "" && b.LocationNo1 != "" {
-			drawString(dc, "다음버스", 24, 60, 70+24-5+yOffset)
-			drawString(dc, fmt.Sprintf("%s분 후 (%s 전)", b.PredictTime1, b.LocationNo1), 32, 60, 70+24+22+10+yOffset)
-			yOffset += 75
+			drawString(dc, "다음버스", 30,
+				75, 80+24-5+yOffset,
+			)
+			drawString(dc, fmt.Sprintf("%s분 후 (%s 전)", b.PredictTime1, b.LocationNo1), 40,
+				75, 80+24+30+10+yOffset,
+			)
+			yOffset += 90
 		}
 		if b.PredictTime2 != "" && b.LocationNo2 != "" {
-			drawString(dc, "다다음버스", 24, 60, 70+24-5+yOffset)
-			drawString(dc, fmt.Sprintf("%s분 후 (%s 전)", b.PredictTime2, b.LocationNo2), 32, 60, 70+24+22+10+yOffset)
-			yOffset += 75
+			drawString(dc, "다다음버스", 30,
+				75, 80+24-5+yOffset,
+			)
+			drawString(dc, fmt.Sprintf("%s분 후 (%s 전)", b.PredictTime2, b.LocationNo2), 40,
+				75, 80+24+30+10+yOffset,
+			)
+			yOffset += 90
 		}
-		yOffset += 10
+		// yOffset += 5
 	}
 
 	lastBuses = buses

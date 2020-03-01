@@ -4,7 +4,7 @@
 ![gbis-frame](_resource/gbis-frame.jpg)
 
 ## requirement
-라즈베리파이와 e-paper 모듈 epd7in5를 사용함.
+라즈베리파이와 e-paper 모듈 epd7in5v2를 사용함.
 
 공공데이터포털에서 다음의 OPEN API 개발 계정을 신청해야 함.
 각 서비스에서 같은 service key 가 주어지지만 모두 신청하지 않으면 안됨.
