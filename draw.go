@@ -57,11 +57,11 @@ func drawBusArrivalInfo(buses []busArrival) {
 	dc.SetColor(color.White)
 	dc.Clear()
 
-	dc.SetColor(color.Black)
-	dc.DrawRectangle(0, 0, 480, 80)
-	dc.Fill()
+	// dc.SetColor(color.Black)
+	// dc.DrawRectangle(0, 0, 480, 80)
+	// dc.Fill()
 
-	drawStringAnchored(dc, stationName, 40, panelW/2, 30, 0.5, 0.5, color.White) // 역이름
+	drawStringAnchored(dc, stationName, 40, panelW/2, 30, 0.5, 0.5, color.Black) // 역이름
 
 	var yOffset float64
 	for _, b := range buses {
@@ -70,11 +70,11 @@ func drawBusArrivalInfo(buses []busArrival) {
 		}
 		// yOffset := float64(160 * i)
 		yOffset += 20
-		drawImage(dc, filepath.Join("_resource", "directions_bus-48px.png"), 12, 82+yOffset) // 아이콘
-		drawStringAnchored(dc, findBusNo(b.RouteID), 42,
+		drawImage(dc, filepath.Join("_resource", "directions_bus-60px.png"), 12, 75+yOffset) // 아이콘
+		drawStringAnchored(dc, findBusNo(b.RouteID), 48,
 			70, 80+24-5+yOffset, 0, 0.4, color.Black,
 		) // 버스번호
-		yOffset += 60
+		yOffset += 65
 		if b.PredictTime1 != "" && b.LocationNo1 != "" {
 			drawString(dc, "다음버스", 30,
 				75, 80+24-5+yOffset,
