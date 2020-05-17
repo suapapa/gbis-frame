@@ -78,11 +78,15 @@ func main() {
 		}
 	}
 
+	// display ip address of gbis-frame for welcome and debug
+	if flagUpdatePanel {
+		displayWelcome()
+	}
+
 	if flagLoopSecs <= 0 {
 		queryBusArrival()
 	} else {
 		tk := time.NewTicker(time.Duration(flagLoopSecs) * time.Second)
-		queryBusArrival()
 		for t := range tk.C {
 			log.Println(t)
 			queryBusArrival()
