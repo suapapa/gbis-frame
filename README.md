@@ -1,6 +1,8 @@
 # gbis-frame
 경기버스정보액자: 집앞 버스 정류장의 버스 정보 상황판을 집안으로
 
+* [202005 고밋업 발표 동영상](https://youtu.be/VBpSll6vkqA)
+
 ![gbis-frame](_resource/gbis-frame.jpg)
 
 ## requirement
