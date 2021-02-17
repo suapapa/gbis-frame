@@ -85,8 +85,8 @@ func main() {
 		queryBusArrival()
 	} else {
 		tk := time.NewTicker(time.Duration(flagLoopSecs) * time.Second)
-		for t := range tk.C {
-			log.Println(t)
+		for range tk.C {
+			// log.Println(t)
 			queryBusArrival()
 		}
 	}

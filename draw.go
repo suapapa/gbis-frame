@@ -101,7 +101,10 @@ func drawBusArrivalInfo(buses []busArrival) {
 		// yOffset += 5
 	}
 
-	drawString(dc, "Last update: "+time.Now().Format("2006-01-02 15:04:06"), 20, 20, 780)
+	drawStringAnchored(dc, "Last update: "+time.Now().Format("2006-01-02 15:04:06"), 20,
+		panelW-20, panelH-20,
+		1, 0, color.Black,
+	)
 
 	lastBuses = buses
 	if flagImageOut != "" {
