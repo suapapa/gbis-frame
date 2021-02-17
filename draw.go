@@ -8,6 +8,7 @@ import (
 	"image/color"
 	"log"
 	"reflect"
+	"time"
 
 	"github.com/fogleman/gg"
 	"github.com/golang/freetype/truetype"
@@ -99,6 +100,8 @@ func drawBusArrivalInfo(buses []busArrival) {
 		}
 		// yOffset += 5
 	}
+
+	drawString(dc, "Last update: "+time.Now().Format("2006-01-02 15:04:06"), 20, 20, 780)
 
 	lastBuses = buses
 	if flagImageOut != "" {
