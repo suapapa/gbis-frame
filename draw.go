@@ -2,11 +2,11 @@ package main
 
 import (
 	"bytes"
+	"embed"
 	"fmt"
 	"image"
 	"image/color"
 	"log"
-	"path/filepath"
 	"reflect"
 
 	"github.com/fogleman/gg"
@@ -25,6 +25,10 @@ var (
 
 	icons map[string]*image.Image
 	fonts map[float64]*font.Face
+
+	//go:embed _resource/directions_bus-60px.png
+	//go:embed _resource/BMDOHYEON_ttf.ttf
+	resource embed.FS
 )
 
 func init() {
@@ -70,7 +74,7 @@ func drawBusArrivalInfo(buses []busArrival) {
 		}
 		// yOffset := float64(160 * i)
 		yOffset += 20
-		drawImage(dc, filepath.Join("_resource", "directions_bus-60px.png"), 12, 75+yOffset) // 아이콘
+		drawImage(dc, "_resource/directions_bus-60px.png", 12, 75+yOffset) // 아이콘
 		drawStringAnchored(dc, findBusNo(b.RouteID), 48,
 			70, 80+24-5+yOffset, 0, 0.4, color.Black,
 		) // 버스번호
@@ -161,7 +165,11 @@ func drawDebugCrossHair(dc *gg.Context, x, y float64) {
 }
 
 func loadImage(name string) (*image.Image, error) {
-	r := bytes.NewReader(MustAsset(name))
+	data, err := resource.ReadFile(name)
+	if err != nil {
+		return nil, err
+	}
+	r := bytes.NewReader(data)
 	im, _, err := image.Decode(r)
 	return &im, err
 }
@@ -170,11 +178,16 @@ func loadFontFace(points float64) (font.Face, error) {
 	if ff, ok := fonts[points]; ok {
 		return *ff, nil
 	}
-	path := filepath.Join("_resource", "BMDOHYEON_ttf.ttf")
-	f, err := truetype.Parse(MustAsset(path))
+
+	data, err := resource.ReadFile("_resource/BMDOHYEON_ttf.ttf")
 	if err != nil {
 		return nil, err
 	}
+	f, err := truetype.Parse(data)
+	if err != nil {
+		return nil, err
+	}
+
 	nface := truetype.NewFace(f, &truetype.Options{
 		Size:    points,
 		Hinting: font.HintingFull,
