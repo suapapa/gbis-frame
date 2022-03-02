@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"os"
 	"strconv"
 )
@@ -16,7 +17,7 @@ func isExist(path string) bool {
 func atoi(v string) int {
 	n, err := strconv.Atoi(v)
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
 	}
 	return n
 }

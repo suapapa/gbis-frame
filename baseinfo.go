@@ -3,9 +3,10 @@ package main
 import (
 	"encoding/xml"
 	"fmt"
-	"log"
 	"net/http"
 	"strings"
+
+	"github.com/pkg/errors"
 )
 
 var (
@@ -21,9 +22,8 @@ func findStationIDAndName(mobileNo string) (string, string) {
 	param := fmt.Sprintf("?serviceKey=%s&keyword=%s", getServiceKey(), mobileNo)
 	// log.Println(param)
 	resp, err := http.Get(urlBusStationService + param)
-
 	if err != nil {
-		panic(err)
+		displayAndPanicErr(errors.Wrap(err, "find st. ID&Name failed"))
 	}
 	defer resp.Body.Close()
 
@@ -31,10 +31,7 @@ func findStationIDAndName(mobileNo string) (string, string) {
 	xmlDec := xml.NewDecoder(resp.Body)
 	xmlDec.Decode(&sr)
 	if sr.MsgHeader.ResultCode != "0" {
-		log.Println(sr)
-		// log.Println(sr.ComMsgHeader.ErrMsg
-		// log.Println(sr.MsgHeader.ResultMessage)
-		panic("somthing wrong in query station")
+		displayAndPanicErr(fmt.Errorf("%s", sr.ComMsgHeader.ErrMsg))
 	}
 
 	return sr.BusStationList.StationID, sr.BusStationList.StationName
@@ -48,7 +45,7 @@ func findBusNo(routeID string) string {
 	resp, err := http.Get(urlBusRouteInfoService +
 		fmt.Sprintf("?serviceKey=%s&routeId=%s", getServiceKey(), routeID))
 	if err != nil {
-		panic(err)
+		displayAndPanicErr(errors.Wrap(err, "find bus no. failed"))
 	}
 	defer resp.Body.Close()
 
@@ -56,10 +53,7 @@ func findBusNo(routeID string) string {
 	xmlDec := xml.NewDecoder(resp.Body)
 	xmlDec.Decode(&sr)
 	if sr.MsgHeader.ResultCode != "0" {
-		log.Println(sr)
-		// log.Println(sr.ComMsgHeader.ErrMsg
-		// log.Println(sr.MsgHeader.ResultMessage)
-		panic("somthing wrong in query bus routeID")
+		displayAndPanicErr(fmt.Errorf("%s", sr.ComMsgHeader.ErrMsg))
 	}
 
 	busNo[routeID] = sr.BusRouteInfoItem.RouteName

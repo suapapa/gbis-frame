@@ -10,6 +10,8 @@ import (
 	"time"
 
 	_ "net/http/pprof"
+
+	"github.com/pkg/errors"
 )
 
 var (
@@ -37,7 +39,7 @@ func main() {
 	flag.Parse()
 
 	if err := initHW(); err != nil {
-		panic(err)
+		log.Fatal(errors.Wrap(err, "init hw fail"))
 	}
 
 	go func() {
@@ -46,7 +48,7 @@ func main() {
 
 	err := loadConfig()
 	if err != nil {
-		panic(err)
+		log.Fatal(errors.Wrap(err, "load config fail"))
 	}
 
 	mobileNo := flag.Args()[0] // 정류장 단축번호. 예) 07-479 (H스퀘어)
@@ -56,7 +58,7 @@ func main() {
 		resp, err := http.Get(urlBusArrivalStationService +
 			fmt.Sprintf("?serviceKey=%s&stationId=%s", getServiceKey(), stationID))
 		if err != nil {
-			panic(err)
+			displayAndPanicErr(errors.Wrap(err, "query bus arraival failed"))
 		}
 		defer resp.Body.Close()
 		var sr BusArrivalStationResponse
@@ -64,8 +66,7 @@ func main() {
 		xmlDec.Decode(&sr)
 		rc := sr.MsgHeader.ResultCode
 		if rc != "0" && rc != "4" { // 4 는 결과없음 (막차 종료 등...)
-			log.Println(sr)
-			panic("somthing wrong in query bus arrival")
+			displayAndPanicErr(fmt.Errorf("%s", sr.ComMsgHeader.ErrMsg))
 		}
 
 		sort.Sort(sr.BusArrivalList) // 도착 시간순으로 버스목록 정렬
@@ -79,6 +80,8 @@ func main() {
 	// display ip address of gbis-frame for welcome and debug
 	if flagUpdatePanel {
 		displayWelcome()
+		time.Sleep(30 * time.Second)
+		queryBusArrival()
 	}
 
 	if flagLoopSecs <= 0 {

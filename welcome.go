@@ -3,11 +3,31 @@ package main
 import (
 	"fmt"
 	"image/color"
+	"log"
 	"net"
 	"os"
+	"time"
 
 	"github.com/fogleman/gg"
 )
+
+func displayAndPanicErr(err error) {
+	if flagUpdatePanel {
+		dc := gg.NewContext(panelW, panelH)
+		dc.SetColor(color.White)
+		dc.Clear()
+
+		y := float64(panelH / 2)
+		drawStringAnchored(dc,
+			err.Error(), 40,
+			panelW/2, y,
+			0.5, 0.5,
+			color.Black,
+		)
+		time.Sleep(10 * time.Second)
+	}
+	log.Fatal(err)
+}
 
 func displayWelcome() error {
 	host, ip, mac, err := resolveNet()

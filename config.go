@@ -2,9 +2,12 @@ package main
 
 import (
 	"encoding/json"
+	"log"
 	"net/url"
 	"os"
 	"path/filepath"
+
+	"github.com/pkg/errors"
 )
 
 var (
@@ -16,7 +19,7 @@ var (
 func init() {
 	dir, err := filepath.Abs(filepath.Dir(os.Args[0]))
 	if err != nil {
-		panic(err)
+		log.Fatal(errors.Wrap(err, "fail to find config dir"))
 	}
 	configFileName = filepath.Join(dir, "config.json")
 }
@@ -30,17 +33,21 @@ type Config struct {
 func (c Config) Save() error {
 	w, err := os.Create(configFileName)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "fail to save config")
 	}
 	defer w.Close()
 
 	// 현재 설정으로 기본 config 파일 생성
-	prettyConfig, err := json.MarshalIndent(c, "", "    ")
+	prettyConfig, err := json.MarshalIndent(c, "", "  ")
 	if err != nil {
-		return err
+		return errors.Wrap(err, "fail to save config")
 	}
 	_, err = w.Write(prettyConfig)
-	return err
+	if err != nil {
+		return errors.Wrap(err, "fail to save config")
+	}
+
+	return nil
 }
 
 func loadConfig() error {
@@ -51,13 +58,13 @@ func loadConfig() error {
 
 	confR, err := os.Open(configFileName)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "fail to load config")
 	}
 	defer confR.Close()
 	jDec := json.NewDecoder(confR)
 	err = jDec.Decode(&config)
 	if err != nil {
-		return err
+		return errors.Wrap(err, "fail to load config")
 	}
 
 	return nil
@@ -70,15 +77,14 @@ func isConfigValid() bool {
 
 	confR, err := os.Open(configFileName)
 	if err != nil {
-		panic(err)
+		log.Fatal(errors.Wrap(err, "fail to valid check of config"))
 	}
 	defer confR.Close()
 	jDec := json.NewDecoder(confR)
 	err = jDec.Decode(&config)
 	if err != nil {
-		panic(err)
+		log.Fatal(errors.Wrap(err, "fail to valid check of config"))
 	}
-	// log.Println(config.ServiceKey)
 
 	return true
 }
@@ -86,14 +92,13 @@ func isConfigValid() bool {
 func getServiceKey() string {
 	serviceKey := os.Getenv("SERVICEKEY")
 	if serviceKey != "" {
-		// log.Println("serviceKey:", serviceKey)
 		return url.QueryEscape(serviceKey)
 	}
 
 	if config.ServiceKey != "" {
-		// log.Println("config serviceKey:", config.ServiceKey)
 		return url.QueryEscape(config.ServiceKey)
 	}
 
-	panic("no servicekey")
+	log.Fatal("no servicekey")
+	return ""
 }

@@ -12,6 +12,7 @@ import (
 
 	"github.com/fogleman/gg"
 	"github.com/golang/freetype/truetype"
+	"github.com/pkg/errors"
 	"golang.org/x/image/font"
 )
 
@@ -126,7 +127,7 @@ func drawImage(dc *gg.Context, imgName string, x, y float64) {
 	} else {
 		img, err = loadImage(imgName)
 		if err != nil {
-			panic(err)
+			log.Fatal(errors.Wrap(err, "fail to draw image"))
 		}
 		icons[imgName] = img
 	}
@@ -140,7 +141,7 @@ func drawString(dc *gg.Context, text string, fontSize, x, y float64) {
 	// ff, err := loadFontFace(filepath.Join("_resource", "BMDOHYEON_ttf.ttf"), fontSize)
 	ff, err := loadFontFace(fontSize)
 	if err != nil {
-		panic(err)
+		log.Fatal(errors.Wrap(err, "fail to load font"))
 	}
 	dc.SetFontFace(ff)
 	dc.DrawString(text, x, y)
@@ -151,7 +152,7 @@ func drawStringAnchored(dc *gg.Context, text string, fontSize, x, y, ax, ay floa
 	dc.SetColor(c)
 	ff, err := loadFontFace(fontSize)
 	if err != nil {
-		panic(err)
+		log.Fatal(errors.Wrap(err, "fail to load font"))
 	}
 	dc.SetFontFace(ff)
 	dc.DrawStringAnchored(text, x, y, ax, ay)
