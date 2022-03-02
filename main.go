@@ -21,9 +21,6 @@ var (
 	flagLoopSecs    int
 	flagStar        string
 
-	flagProfileCPU string
-	flagProfileMem string
-
 	stationID, stationName string
 )
 
@@ -46,12 +43,7 @@ func main() {
 		log.Println(http.ListenAndServe(":6060", nil))
 	}()
 
-	err := loadConfig()
-	if err != nil {
-		log.Fatal(errors.Wrap(err, "load config fail"))
-	}
-
-	mobileNo := flag.Args()[0] // 정류장 단축번호. 예) 07-479 (H스퀘어)
+	mobileNo := flag.Arg(0) // 정류장 단축번호. 예) 07-479 (H스퀘어)
 	stationID, stationName = findStationIDAndName(mobileNo)
 
 	queryBusArrival := func() {

@@ -2,10 +2,10 @@ package main
 
 import (
 	"log"
-	"os"
 	"strconv"
 )
 
+/*
 func isExist(path string) bool {
 	_, err := os.Stat(path)
 	if os.IsNotExist(err) || err != nil {
@@ -13,6 +13,7 @@ func isExist(path string) bool {
 	}
 	return true
 }
+*/
 
 func atoi(v string) int {
 	n, err := strconv.Atoi(v)
