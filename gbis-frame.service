@@ -1,0 +1,14 @@
+[Unit]
+Description=gbis panel
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=5s
+Environment="SERVICEKEY={YOUR_API_KEY}"
+ExecStart=/home/pi/gbis-frame -l 300 -e 07479
+
+[Install]
+WantedBy=multi-user.target

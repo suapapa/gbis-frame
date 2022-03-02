@@ -1,9 +1,9 @@
 package main
 
 const (
-	urlBusStationService        = "http://openapi.gbis.go.kr/ws/rest/busstationservice"         // 정류소 조회 서비스 -> 정류소명/번호 목록조회
-	urlBusRouteInfoService      = "http://openapi.gbis.go.kr/ws/rest/busrouteservice/info"      // 버스노선 조회 서비스 -> 노선정보 항목조회
-	urlBusArrivalStationService = "http://openapi.gbis.go.kr/ws/rest/busarrivalservice/station" // 버스 도착정보 목록조회
+	urlBusStationService        = "http://apis.data.go.kr/6410000/busstationservice/getBusStationList" // 정류소 조회 서비스 -> 정류소명/번호 목록조회
+	urlBusRouteInfoService      = "http://apis.data.go.kr/6410000/busrouteservice/getBusRouteInfoItem" // 버스노선 조회 서비스 -> 노선정보 항목조회
+	urlBusArrivalStationService = "http://apis.data.go.kr/6410000/busarrivalservice/getBusArrivalList" // 버스 도착정보 목록조회
 )
 
 // open following URL for test

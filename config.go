@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"net/url"
 	"os"
 	"path/filepath"
 )
@@ -77,6 +78,7 @@ func isConfigValid() bool {
 	if err != nil {
 		panic(err)
 	}
+	// log.Println(config.ServiceKey)
 
 	return true
 }
@@ -85,12 +87,12 @@ func getServiceKey() string {
 	serviceKey := os.Getenv("SERVICEKEY")
 	if serviceKey != "" {
 		// log.Println("serviceKey:", serviceKey)
-		return serviceKey
+		return url.QueryEscape(serviceKey)
 	}
 
 	if config.ServiceKey != "" {
 		// log.Println("config serviceKey:", config.ServiceKey)
-		return config.ServiceKey
+		return url.QueryEscape(config.ServiceKey)
 	}
 
 	panic("no servicekey")

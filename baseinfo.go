@@ -18,8 +18,10 @@ func init() {
 
 func findStationIDAndName(mobileNo string) (string, string) {
 	mobileNo = strings.Replace(mobileNo, "-", "", -1)
-	resp, err := http.Get(urlBusStationService +
-		fmt.Sprintf("?serviceKey=%s&keyword=%s", getServiceKey(), mobileNo))
+	param := fmt.Sprintf("?serviceKey=%s&keyword=%s", getServiceKey(), mobileNo)
+	// log.Println(param)
+	resp, err := http.Get(urlBusStationService + param)
+
 	if err != nil {
 		panic(err)
 	}
