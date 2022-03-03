@@ -38,7 +38,7 @@ func init() {
 	fonts = make(map[float64]*font.Face)
 }
 
-func drawBusArrivalInfo(buses []busArrival) {
+func drawBusArrivalInfo(buses []busArrival, qTime time.Time) {
 	if flagImageOut == "" && !flagUpdatePanel {
 		return
 	}
@@ -70,39 +70,46 @@ func drawBusArrivalInfo(buses []busArrival) {
 	drawStringAnchored(dc, stationName, 40, panelW/2, 30, 0.5, 0.5, color.Black) // 역이름
 
 	var yOffset float64
-	for _, b := range buses {
-		if yOffset >= panelH {
-			break
+	if len(buses) > 0 {
+		for _, b := range buses {
+			if yOffset >= panelH {
+				break
+			}
+			// yOffset := float64(160 * i)
+			yOffset += 20
+			drawImage(dc, "_resource/directions_bus-60px.png", 12, 75+yOffset) // 아이콘
+			drawStringAnchored(dc, findBusNo(b.RouteID), 48,
+				70, 80+24-5+yOffset, 0, 0.4, color.Black,
+			) // 버스번호
+			yOffset += 65
+			if b.PredictTime1 != "" && b.LocationNo1 != "" {
+				drawString(dc, "다음버스", 30,
+					75, 80+24-5+yOffset,
+				)
+				drawString(dc, fmt.Sprintf("%s분 후 (%s 전)", b.PredictTime1, b.LocationNo1), 40,
+					75, 80+24+30+10+yOffset,
+				)
+				yOffset += 90
+			}
+			if b.PredictTime2 != "" && b.LocationNo2 != "" {
+				drawString(dc, "다다음버스", 30,
+					75, 80+24-5+yOffset,
+				)
+				drawString(dc, fmt.Sprintf("%s분 후 (%s 전)", b.PredictTime2, b.LocationNo2), 40,
+					75, 80+24+30+10+yOffset,
+				)
+				yOffset += 90
+			}
+			// yOffset += 5
 		}
-		// yOffset := float64(160 * i)
-		yOffset += 20
-		drawImage(dc, "_resource/directions_bus-60px.png", 12, 75+yOffset) // 아이콘
-		drawStringAnchored(dc, findBusNo(b.RouteID), 48,
-			70, 80+24-5+yOffset, 0, 0.4, color.Black,
-		) // 버스번호
-		yOffset += 65
-		if b.PredictTime1 != "" && b.LocationNo1 != "" {
-			drawString(dc, "다음버스", 30,
-				75, 80+24-5+yOffset,
-			)
-			drawString(dc, fmt.Sprintf("%s분 후 (%s 전)", b.PredictTime1, b.LocationNo1), 40,
-				75, 80+24+30+10+yOffset,
-			)
-			yOffset += 90
-		}
-		if b.PredictTime2 != "" && b.LocationNo2 != "" {
-			drawString(dc, "다다음버스", 30,
-				75, 80+24-5+yOffset,
-			)
-			drawString(dc, fmt.Sprintf("%s분 후 (%s 전)", b.PredictTime2, b.LocationNo2), 40,
-				75, 80+24+30+10+yOffset,
-			)
-			yOffset += 90
-		}
-		// yOffset += 5
+	} else {
+		drawStringAnchored(dc, "도착정보없음", 50,
+			panelW/2, panelH/2,
+			0.5, 0.5, color.Black,
+		)
 	}
 
-	drawStringAnchored(dc, "Last update: "+time.Now().Format("2006-01-02 15:04:06"), 20,
+	drawStringAnchored(dc, "Last update: "+qTime.Format("2006-01-02 15:04:06"), 20,
 		panelW-20, panelH-20,
 		1, 0, color.Black,
 	)
