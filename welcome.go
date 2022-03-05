@@ -17,15 +17,20 @@ func displayAndPanicErr(err error) {
 		dc.SetColor(color.White)
 		dc.Clear()
 
+		errStr := err.Error()[:25]
+		errStr += "..."
+
 		y := float64(panelH / 2)
 		drawStringAnchored(dc,
-			err.Error(), 40,
+			errStr, 20,
 			panelW/2, y,
 			0.5, 0.5,
 			color.Black,
 		)
+		updatePanel(dc.Image())
 		time.Sleep(10 * time.Second)
 	}
+
 	log.Fatal(err)
 }
 

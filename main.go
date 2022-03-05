@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"sort"
 	"time"
@@ -22,6 +23,8 @@ var (
 	flagStar        string
 
 	stationID, stationName string
+
+	httpClient *http.Client
 )
 
 func init() {
@@ -30,6 +33,16 @@ func init() {
 	flag.BoolVar(&flagDebugGG, "d", false, "draw guide line for gg elements")
 	flag.IntVar(&flagLoopSecs, "l", 0, "loop every given second. 0 means execute just once and exit.")
 	flag.StringVar(&flagStar, "s", "", "pick a bus which always display on top")
+
+	httpClient = &http.Client{
+		Transport: &http.Transport{
+			Dial: (&net.Dialer{
+				Timeout: 5 * time.Second,
+			}).Dial,
+			TLSHandshakeTimeout: 5 * time.Second,
+		},
+		Timeout: 3 * time.Second,
+	}
 }
 
 func main() {
@@ -78,7 +91,7 @@ func printBusArrivalInfo(buses []busArrival) {
 }
 
 func queryBusArrival(qTime time.Time) {
-	resp, err := http.Get(urlBusArrivalStationService +
+	resp, err := httpClient.Get(urlBusArrivalStationService +
 		fmt.Sprintf("?serviceKey=%s&stationId=%s", getServiceKey(), stationID))
 	if err != nil {
 		displayAndPanicErr(errors.Wrap(err, "query bus arraival failed"))

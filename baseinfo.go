@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/xml"
 	"fmt"
-	"net/http"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -21,7 +20,7 @@ func findStationIDAndName(mobileNo string) (string, string) {
 	mobileNo = strings.Replace(mobileNo, "-", "", -1)
 	param := fmt.Sprintf("?serviceKey=%s&keyword=%s", getServiceKey(), mobileNo)
 	// log.Println(param)
-	resp, err := http.Get(urlBusStationService + param)
+	resp, err := httpClient.Get(urlBusStationService + param)
 	if err != nil {
 		displayAndPanicErr(errors.Wrap(err, "find st. ID&Name failed"))
 	}
@@ -42,7 +41,7 @@ func findBusNo(routeID string) string {
 		return bn
 	}
 
-	resp, err := http.Get(urlBusRouteInfoService +
+	resp, err := httpClient.Get(urlBusRouteInfoService +
 		fmt.Sprintf("?serviceKey=%s&routeId=%s", getServiceKey(), routeID))
 	if err != nil {
 		displayAndPanicErr(errors.Wrap(err, "find bus no. failed"))
