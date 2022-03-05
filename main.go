@@ -43,19 +43,19 @@ func main() {
 		log.Println(http.ListenAndServe(":6060", nil))
 	}()
 
-	mobileNo := flag.Arg(0) // 정류장 단축번호. 예) 07-479 (H스퀘어)
-	stationID, stationName = findStationIDAndName(mobileNo)
-
 	// display ip address of gbis-frame for welcome and debug
 	if flagUpdatePanel {
 		displayWelcome()
 		time.Sleep(15 * time.Second)
-		queryBusArrival(time.Now())
 	}
+
+	mobileNo := flag.Arg(0) // 정류장 단축번호. 예) 07-479 (H스퀘어)
+	stationID, stationName = findStationIDAndName(mobileNo)
 
 	if flagLoopSecs <= 0 {
 		queryBusArrival(time.Now())
 	} else {
+		queryBusArrival(time.Now())
 		tk := time.NewTicker(time.Duration(flagLoopSecs) * time.Second)
 		for t := range tk.C {
 			// log.Println(t)
