@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"github.com/disintegration/imaging"
+	"github.com/lestrrat-go/dither"
 	"github.com/pkg/errors"
 	"github.com/suapapa/go_devices/epd7in5v2"
 	"periph.io/x/periph/conn/spi/spireg"
@@ -39,6 +40,7 @@ func initHW() error {
 
 func updatePanel(img image.Image) {
 	img = imaging.Rotate(img, 90, color.White)
+	img = dither.Monochrome(dither.Burkes, img, 1.18)
 
 	if err := dev.Draw(img.Bounds(), img, image.Point{}); err != nil {
 		log.Fatal(errors.Wrap(err, "fail to update panel"))
